@@ -24,7 +24,7 @@ public class ReadCSV {
     return sales;
   }
 
-  public List<Seller> readSellers (String filePath) throws IOException {
+  public List<Seller> readSellers(String filePath) throws IOException {
     List<Seller> sellers = new ArrayList<>();
     List<Int> instantiated = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -41,7 +41,7 @@ public class ReadCSV {
     return sellers;
   }
 
-  public List<Double> readRules (String filePath) throws IOException {
+  public List<Double> readRules(String filePath) throws IOException {
     List<Double> rules = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
