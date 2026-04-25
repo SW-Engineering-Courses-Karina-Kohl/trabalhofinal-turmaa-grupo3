@@ -1,17 +1,13 @@
 package br.edu.ufrgs.model;
 
-import java.time.*;
-
-
 public class Venda{
     private Vendedor vendedor;
-    private int vendaId;
-    private LocalDate dataVenda;
+    private String vendaId;
     private double valorVenda;
 
-    public Venda(Vendedor vendedor, int vendaId, LocalDate dataVenda, double valorVenda) {
+    public Venda(Vendedor vendedor, String vendaId, double valorVenda) {
         this.vendedor = vendedor;
-        this.dataVenda = dataVenda;
+        this.vendaId = vendaId;
         this.valorVenda = valorVenda;
     }
 
@@ -19,8 +15,8 @@ public class Venda{
         return vendedor;
     }
 
-    public LocalDate getDataVenda() {
-        return dataVenda;
+    public String getVendaId() {
+        return vendaId;
     }
 
     public double getValorVenda() {
