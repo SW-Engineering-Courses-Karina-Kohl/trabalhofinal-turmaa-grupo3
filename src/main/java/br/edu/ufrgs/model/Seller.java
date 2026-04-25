@@ -1,3 +1,5 @@
+// TODO: LINK SALES TO THEIR SELLERS
+
 package br.edu.ufrgs.model;
 
 public class Seller {
