@@ -1,3 +1,5 @@
+// TODO: CHECK FOR POSSIBLE INPUT ERRORS
+
 package br.edu.ufrgs.infrastructure;
 
 import br.edu.ufrgs.model.Sale;
@@ -38,4 +40,22 @@ public class ReadCSV {
     }
     return sellers;
   }
+
+  public List<Double> readRules (String filePath) throws IOException {
+    List<Double> rules = new ArrayList<>();
+    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+      String line;
+      int i = 0;
+      while ((line = br.readLine()) != null) {
+        String[] data = linha.split(",");
+        double minimumGoal = Double.parseDouble(data[0]));
+        double percentage = Double.parseDouble(data[1]));
+        rules.add(minimum);
+        rules.add(percentage);
+      }
+    }
+  }
+  return sellers;
+}
+
 }
