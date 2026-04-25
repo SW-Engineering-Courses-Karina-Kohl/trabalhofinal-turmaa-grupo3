@@ -1,24 +1,29 @@
 package br.edu.ufrgs.model;
 
-/**
- * classe que representa um vendedor.
- * não há métodos setters, pois os atributos são definidos no construtor e não devem ser alterados posteriormente.
- */
-
 public class Vendedor {
   private String nome;
-  private int vendedor_id;
-
-  public Vendedor(String nome, int vendedor_id) {
+  private int vendedorId;
+  private double salario;                                   // salário com bônus já aplicado
+  private Venda vendas[];                                   // conjunto de vendas feitas pelo vendedor
+  
+  public Vendedor(String nome, int vendedorId) {
     this.nome = nome;
-    this.vendedor_id = vendedor_id;
+    this.vendedorId = vendedorId;
   }
 
   public String getNome() {
     return nome;
   }
 
-  public int getVendedor_id() {
-    return vendedor_id;
+  public int getVendedorId() {
+    return vendedorId;
+  }
+
+  public double getSalario() {
+    return salario; 
+  }
+
+  public double calculaSalario() {                          // método para calcular salário com bônus já aplicado
+  
   }
 }
