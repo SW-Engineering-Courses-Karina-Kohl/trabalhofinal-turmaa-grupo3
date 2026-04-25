@@ -39,3 +39,6 @@ version control guidelines
   -> open a pull request comparing the main branch with your feature branch
   -> add a brief description of the fixes
   -> once approved, your code will be merged into main
+
+class diagram
+-> the whiteboard can be accessed at: https://canva.link/sg8856046tombjx
