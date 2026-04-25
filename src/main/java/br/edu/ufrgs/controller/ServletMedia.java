@@ -10,23 +10,22 @@ import java.io.IOException;
 
 @WebServlet("/processa")
 public class ServletMedia extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-            throws ServletException, IOException {
-        
-        try {
-            String nome = request.getParameter("nome");
-            double nota = Double.parseDouble(request.getParameter("nota"));
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+    throws ServletException, IOException {
 
-            // Uso da classe Model
-            Aluno aluno = new Aluno(nome, nota);
-            String mensagem = aluno.getMensagemFinal();
+      try {
+        String nome = request.getParameter("nome");
+        double nota = Double.parseDouble(request.getParameter("nota"));
 
-            request.setAttribute("resultado", mensagem);
-            
-        } catch (NumberFormatException e) {
-            request.setAttribute("resultado", "Erro: Informe uma nota válida.");
-        }
+        Aluno aluno = new Aluno(nome, nota);
+        String mensagem = aluno.getMensagemFinal();
 
-        request.getRequestDispatcher("index.jsp").forward(request, response);
+        request.setAttribute("resultado", mensagem);
+
+      } catch (NumberFormatException e) {
+        request.setAttribute("resultado", "Erro: Informe uma nota válida.");
+      }
+
+      request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 }
