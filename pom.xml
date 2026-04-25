@@ -1,27 +1,27 @@
 <project>
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>br.edu.ufrgs</groupId>
-    <artifactId>exemplo-servlet</artifactId>
-    <version>1.0</version>
-    <packaging>war</packaging>
-    <dependencies>
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-    <build>
-        <finalName>ROOT</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
-            </plugin>
-        </plugins>
-    </build>
+<modelVersion>4.0.0</modelVersion>
+<groupId>br.edu.ufrgs</groupId>
+<artifactId>exemplo-servlet</artifactId>
+<version>1.0</version>
+<packaging>war</packaging>
+<dependencies>
+<dependency>
+<groupId>jakarta.servlet</groupId>
+<artifactId>jakarta.servlet-api</artifactId>
+<version>6.0.0</version>
+<scope>provided</scope>
+</dependency>
+</dependencies>
+<build>
+<finalName>ROOT</finalName>
+<plugins>
+<plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-war-plugin</artifactId>
+<version>3.3.2</version>
+</plugin>
+</plugins>
+</build>
 </project>
 
 
