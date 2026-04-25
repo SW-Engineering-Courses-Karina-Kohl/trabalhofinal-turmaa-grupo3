@@ -5,7 +5,7 @@ public class Sale {
   private String saleId;
   private double salePrice;
 
-  public Sale (int sellerId, String saleId, double salePrice) {
+  public Sale(int sellerId, String saleId, double salePrice) {
     this.sellerId = sellerId;
     this.saleId = saleId;
     this.salePrice = salePrice;
