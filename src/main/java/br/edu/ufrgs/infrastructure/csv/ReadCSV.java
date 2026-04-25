@@ -54,8 +54,6 @@ public class ReadCSV {
         rules.add(percentage);
       }
     }
+    return rules;
   }
-  return sellers;
-}
-
 }
