@@ -40,5 +40,12 @@ version control guidelines
   -> add a brief description of the fixes
   -> once approved, your code will be merged into main
 
+using docker
+
+docker compose down
+docker compose build --no-cache
+docker compose up
+
 class diagram
+
 -> the whiteboard can be accessed at: https://canva.link/sg8856046tombjx
