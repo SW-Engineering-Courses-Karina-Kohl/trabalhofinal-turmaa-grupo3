@@ -42,9 +42,9 @@ version control guidelines
 
 using docker
 
-docker compose down
-docker compose build --no-cache
-docker compose up
+-> docker compose down
+-> docker compose build --no-cache
+-> docker compose up
 
 class diagram
 
