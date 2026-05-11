@@ -25,7 +25,8 @@ public class Seller {
     return salario; 
   }
 
-  public double calcSalary() {                              // method do calculate base salary + bonus
-  
+  public double calcSalary() {   
+    // method do calculate base salary + bonus
+    
   }
 }
