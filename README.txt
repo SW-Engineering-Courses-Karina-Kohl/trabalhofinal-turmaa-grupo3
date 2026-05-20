@@ -49,3 +49,32 @@ using docker
 class diagram
 
 -> the whiteboard can be accessed at: https://canva.link/sg8856046tombjx
+
+folder structure
+
+my-servlet-app/
+├── pom.xml                                (build and dependency config)
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── yourdomain/
+│   │   │           └── app/
+│   │   │               ├── controllers/   (servlets: handle http requests)
+│   │   │               ├── models/        (data objects: represent state)
+│   │   │               ├── services/      (business logic: rules and processing)
+│   │   │               └── dao/           (data access: database queries)
+│   │   ├── resources/
+│   │   │   ├── application.properties     (database credentials, settings)
+│   │   │   └── data/
+│   │   │       └── internal_data.csv      (static files read internally by java)
+│   │   └── webapp/
+│   │       ├── index.jsp                  (public views like html/jsp)
+│   │       ├── assets/
+│   │       │   └── templates/
+│   │       │       └── template.csv       (public files users can download)
+│   │       └── WEB-INF/
+│   │           └── web.xml                (protected server configuration)
+│   └── test/
+│       ├── java/                          (unit tests mirroring main packages)
+│       └── resources/                     (test-specific configurations)
