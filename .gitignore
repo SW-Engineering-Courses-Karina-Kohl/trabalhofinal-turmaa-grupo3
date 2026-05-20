@@ -1,0 +1,7 @@
+*/node_modules/
+dist/
+.env.local
+coverage/
+*.class
+target/
+.DS_Store

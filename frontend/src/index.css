@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --sidebar-w: 13rem;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-800 font-sans;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { @apply bg-transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400; }
+}
+
+@layer components {
+  .status-badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide uppercase;
+  }
+  .status-badge--approved {
+    @apply text-brand-700 bg-brand-50;
+  }
+  .status-badge--reviewing {
+    @apply text-amber-700 bg-amber-50;
+  }
+  .status-badge--pending {
+    @apply text-slate-600 bg-slate-100;
+  }
+  .status-badge--rejected {
+    @apply text-red-700 bg-red-50;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl border border-slate-100 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5
+           text-sm font-semibold text-white shadow-sm
+           hover:bg-brand-800 active:scale-95 transition-all;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 rounded-xl border border-slate-200
+           bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm
+           hover:bg-slate-50 active:scale-95 transition-all;
+  }
+
+  .input-search {
+    @apply w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5
+           text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2
+           focus:ring-brand-500 focus:border-transparent transition;
+  }
+}
