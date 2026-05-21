@@ -1,10 +1,22 @@
 services:
+  redis:
+    image: redis:7-alpine
+    networks:
+      - salesops-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  
   backend:
     build:
       context: ./pseudobackend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    volumes: 
+      - "./pseudobackend:/rails"
     environment:
       RAILS_ENV: development
       DB_HOST: db

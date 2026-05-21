@@ -32,9 +32,6 @@ module Api
           id:             report.id,
           filename:       report.filename,
           status:         report.status,
-          commission_pool: report.commission_pool,
-          seller_count:   report.seller_count,
-          average_payout: report.average_payout,
           created_at:     report.created_at
         }
       end

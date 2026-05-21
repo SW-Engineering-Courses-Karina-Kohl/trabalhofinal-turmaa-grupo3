@@ -66,8 +66,6 @@ module Api
           commission_pool: report.commission_pool,
           seller_count:    report.seller_count,
           average_payout:  report.average_payout,
-          quota_attainment: report.quota_attainment,
-          regions_count:   report.regions_count,
           validation_passed: report.processed?,
           created_at:      report.created_at,
           updated_at:      report.updated_at
@@ -82,24 +80,10 @@ module Api
           id:               item.id,
           name:             item.name,
           initials:         item.initials,
-          region:           fake_region(item.id),
           total_sales:      item.total_sales,
           commission_rate:  (item.commission_rate * 100).round(2),
           final_commission: item.commission,
-          status:           fake_status(item.id)
         }
-      end
-
-      # Deterministic fakes for fields not stored in the DB
-      REGIONS  = %w[North\ America EMEA APAC LATAM].freeze
-      STATUSES = %w[APPROVED APPROVED APPROVED REVIEWING PENDING].freeze
-
-      def fake_region(id)
-        REGIONS[id % REGIONS.length]
-      end
-
-      def fake_status(id)
-        STATUSES[id % STATUSES.length]
       end
     end
   end

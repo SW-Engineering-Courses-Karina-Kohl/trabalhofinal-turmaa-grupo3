@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # ── Swagger Endpoint ───────────────────────────────────────────────────────
+  mount Rswag::Api::Engine => '/api-docs'
+  
   # ── Avo admin ──────────────────────────────────────────────────────────────
   mount Avo::Engine, at: Avo.configuration.root_path
 
