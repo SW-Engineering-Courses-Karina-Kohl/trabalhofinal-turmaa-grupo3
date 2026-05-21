@@ -13,8 +13,6 @@ services:
     build:
       context: ./pseudobackend
       dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
     volumes: 
       - "./pseudobackend:/rails"
     environment:
@@ -30,3 +28,9 @@ services:
         condition: service_healthy
     networks:
       - salesops-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.routers.backend.service=backend-service"
+      - "traefik.http.services.backend-service.loadbalancer.server.port=3000"

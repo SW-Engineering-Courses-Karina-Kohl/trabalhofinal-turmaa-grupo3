@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 
 export default defineConfig({
+  server: {
+    allowedHosts: "frontend.local"
+  },
   plugins: [react()],
   resolve: {
     alias: {

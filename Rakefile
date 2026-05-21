@@ -28,7 +28,7 @@ namespace :services do
 
   desc "Start all services (detached)"
   task :up do
-    sh "docker compose #{DOCKER_COMPOSE_FILES} up -d"
+    sh "docker compose #{DOCKER_COMPOSE_FILES} up"
   end
 
   desc "Stop all services"
