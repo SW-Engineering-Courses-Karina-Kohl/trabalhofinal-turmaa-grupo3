@@ -2,15 +2,19 @@
 
 package br.edu.ufrgs.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Seller {
   private String name;
   private int sellerId;
-  private double salary;                                    // base salary + bonus
-  private Sale sales[];                                     // all sales made by the seller
+  private double salary;
+  private List<Sale> sales;
   
   public Seller(String name, int sellerId) {
     this.name = name;
     this.sellerId = sellerId;
+    this.sales = new ArrayList<>();
   }
 
   public String getName() {
@@ -25,8 +29,15 @@ public class Seller {
     return this.salary; 
   }
 
-  public double calcSalary() {   
-    // method do calculate base salary + bonus
-    return 
+  public void setSalary(double salary) {
+    this.salary = salary;
+  }
+
+  public List<Sale> getSales() {
+    return this.sales;
+  }
+
+  public void addSale(Sale sale) {
+    this.sales.add(sale);
   }
 }

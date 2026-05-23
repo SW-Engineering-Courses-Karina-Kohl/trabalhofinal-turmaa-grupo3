@@ -6,9 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import br.edu.ufrgs.model.ComissionRule;
+import br.edu.ufrgs.model.ComissionPolicy;
 
 public class ComissionRuleCsvParser {
-  public List<ComissionRule> readRules(String filePath) throws IOException {
+  public ComissionPolicy readRules(String filePath) throws IOException {
 
     List<ComissionRule> rules = new ArrayList<>();
     
@@ -34,6 +35,6 @@ public class ComissionRuleCsvParser {
       }
     }
 
-    return rules;
+    return new ComissionPolicy(rules);
   }
 }

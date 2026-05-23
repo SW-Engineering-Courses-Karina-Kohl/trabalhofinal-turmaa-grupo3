@@ -12,13 +12,7 @@ public class ComissionPolicy {
     this.rules.sort((r1, r2) -> Double.compare(r2.getMinimumGoal(), r1.getMinimumGoal()));
   }
 
-  public double calculate(double totalSales) {
-    for (ComissionRule rule : rules) {
-      if (totalSales >= rule.getMinimumGoal()) {
-        return totalSales * rule.getPercentage();
-      }
-    }
-    
-    return 0.0;
+  public List<ComissionRule> getRules() {
+    return this.rules;
   }
 }
