@@ -5,36 +5,36 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import br.edu.ufrgs.model.ComissionRule;
-import br.edu.ufrgs.model.ComissionPolicy;
+import br.edu.ufrgs.model.CommissionRule;
+import br.edu.ufrgs.model.CommissionPolicy;
 
-public class ComissionRuleCsvParser {
-  public ComissionPolicy readRules(String filePath) throws IOException {
+public class CommissionRuleCsvParser {
+  public CommissionPolicy readRules(String filePath) throws IOException {
 
-    List<ComissionRule> rules = new ArrayList<>();
-    
+    List<CommissionRule> rules = new ArrayList<>();
+
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
 
       String line;
-      
+
       // Ignore CSV header
       br.readLine();
 
       while ((line = br.readLine()) != null) {
-        /*Split the line by the comma.*/
+        /* Split the line by the comma. */
         String[] data = line.split(",");
 
         try {
           double minimumGoal = Double.parseDouble(data[0]);
           double percentage = Double.parseDouble(data[1]);
-          rules.add(new ComissionRule(minimumGoal, percentage));
-          
-        } catch (NumberFormatException | IllegalArgumentException e) {
+          rules.add(new CommissionRule(minimumGoal, percentage));
+
+        } catch (IllegalArgumentException e) {
           System.out.println("Error: Invalid value in csv! " + e.getMessage());
         }
       }
     }
 
-    return new ComissionPolicy(rules);
+    return new CommissionPolicy(rules);
   }
 }
