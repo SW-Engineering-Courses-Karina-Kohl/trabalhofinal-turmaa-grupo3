@@ -1,4 +1,4 @@
-package br.edu.ufrgs.infrastructure.csv;
+package br.edu.ufrgs.dao.csv;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

@@ -1,4 +1,7 @@
-package br.edu.ufrgs.infrastructure.csv;
+// TODO: link sales to sellers with HashMap(?)
+//       using a single method to read both
+
+package br.edu.ufrgs.dao.csv;
 
 import br.edu.ufrgs.model.Sale;
 import br.edu.ufrgs.model.Seller;
