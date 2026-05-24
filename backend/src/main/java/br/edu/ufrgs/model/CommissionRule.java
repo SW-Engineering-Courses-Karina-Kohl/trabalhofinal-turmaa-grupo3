@@ -1,6 +1,6 @@
 package br.edu.ufrgs.model;
 
-public class ComissionRule {
+public class CommissionRule {
   private double minimumGoal;
   private double percentage;
 

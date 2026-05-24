@@ -1,6 +1,3 @@
-// TODO: link sales to sellers with HashMap(?)
-//       using a single method to read both
-
 package br.edu.ufrgs.dao.csv;
 
 import br.edu.ufrgs.model.Sale;
@@ -19,8 +16,20 @@ public class SalesCsvParser {
       br.readLine(); // ignore CSV header
       while ((line = br.readLine()) != null) {
         String[] data = line.split(",");
-        Sale sale = new Sale(Integer.parseInt(data[1]), data[0], Double.parseDouble(data[3]));
-        sales.add(sale);
+        /*
+         * Data[] vetor should contain>
+         * data[0] : saleID,
+         * data[1]: sellerID,
+         * data[3]: sale price
+         */
+        try {
+          Sale sale = new Sale(Integer.parseInt(data[1]), data[0], Double.parseDouble(data[3]));
+          sales.add(sale);
+
+        } catch (IllegalArgumentException e) {
+          System.out.println("Error parsing sale in CSV: " + e.getMessage());
+
+        }
       }
     }
     return sales;
@@ -32,15 +41,25 @@ public class SalesCsvParser {
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
       br.readLine(); // ignore CSV header
+
       while ((line = br.readLine()) != null) {
         String[] data = line.split(",");
-        if (!instantiated.contains(data[2])) {
-          Seller seller = new Seller(data[2], Integer.parseInt(data[1]));
-          sellers.add(seller);
+
+        try {
+          if (!instantiated.contains(data[1])) {
+            Seller seller = new Seller(data[2], Integer.parseInt(data[1]));
+            sellers.add(seller);
+            instantiated.add(data[1]);
+
+          }
+
+        } catch (IllegalArgumentException e) {
+          System.out.println("Error parsing seller in CSV: " + e.getMessage());
+
         }
-        instantiated.add(data[2]);
       }
     }
+
     return sellers;
   }
 }
