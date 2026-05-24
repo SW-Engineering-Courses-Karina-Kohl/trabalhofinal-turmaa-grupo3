@@ -39,9 +39,9 @@ git pull origin main
 ### 2. Feature & Bug Fix Branches
 
 Create a descriptive branch for your isolated task. Use the following prefixes:
-* 
+
 **Features:** `feature/short-description` 
-* 
+ 
 **Bugs:** `bugfix/short-description` 
 Switch to your new branch using:
 ```bash
