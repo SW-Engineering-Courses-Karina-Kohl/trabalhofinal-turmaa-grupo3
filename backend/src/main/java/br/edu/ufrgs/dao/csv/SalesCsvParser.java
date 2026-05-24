@@ -16,7 +16,7 @@ public class SalesCsvParser {
     List<Sale> sales = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
-      br.readLine(); // Ignore CSV header
+      br.readLine(); // ignore CSV header
       while ((line = br.readLine()) != null) {
         String[] data = line.split(",");
         Sale sale = new Sale(Integer.parseInt(data[1]), data[0], Double.parseDouble(data[3]));
@@ -31,7 +31,7 @@ public class SalesCsvParser {
     List<String> instantiated = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
-      br.readLine(); // Ignore CSV header
+      br.readLine(); // ignore CSV header
       while ((line = br.readLine()) != null) {
         String[] data = line.split(",");
         if (!instantiated.contains(data[2])) {
