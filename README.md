@@ -98,6 +98,7 @@ docker compose up
 ## 📊 Class Diagram
 
 The architectural whiteboard layout and UML class diagram can be accessed via Canva:
+
 👉 **[Access the Canva Whiteboard Workspace](https://canva.link/sg8856046tombjx)** 
 
 ---
