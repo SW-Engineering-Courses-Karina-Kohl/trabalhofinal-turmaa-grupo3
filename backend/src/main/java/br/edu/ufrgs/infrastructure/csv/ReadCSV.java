@@ -16,8 +16,8 @@ public class ReadCSV {
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
       while ((line = br.readLine()) != null) {
-        String[] data = linha.split(",");
-        Sale sale = new Sale(data[1], data[0], Double.parseDouble(data[3]));
+        String[] data = line.split(",");
+        Sale sale = new Sale(Integer.parseInt(data[1]), data[0], Double.parseDouble(data[3]));
         sales.add(sale);
       }
     }
@@ -26,16 +26,16 @@ public class ReadCSV {
 
   public List<Seller> readSellers(String filePath) throws IOException {
     List<Seller> sellers = new ArrayList<>();
-    List<Int> instantiated = new ArrayList<>();
+    List<Integer> instantiated = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
       while ((line = br.readLine()) != null) {
-        String[] data = linha.split(",");
-        if (!instantiated.contains(data[2]) {
+        String[] data = line.split(",");
+        if (!instantiated.contains(data[2])) {
           Seller seller = new Seller(data[2], Integer.parseInt(data[1]));
           sellers.add(seller);
         }
-        instantiated.add(data[2]);
+        instantiated.add(Integer.parseInt(data[2]));
       }
     }
     return sellers;
@@ -47,10 +47,10 @@ public class ReadCSV {
       String line;
       int i = 0;
       while ((line = br.readLine()) != null) {
-        String[] data = linha.split(",");
-        double minimumGoal = Double.parseDouble(data[0]));
-        double percentage = Double.parseDouble(data[1]));
-        rules.add(minimum);
+        String[] data = line.split(",");
+        double minimumGoal = Double.parseDouble(data[0]);
+        double percentage = Double.parseDouble(data[1]);
+        rules.add(minimumGoal);
         rules.add(percentage);
       }
     }
