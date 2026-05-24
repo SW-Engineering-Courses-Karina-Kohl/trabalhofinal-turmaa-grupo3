@@ -13,7 +13,7 @@ public class SalesCsvParser {
     List<Sale> sales = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
-      br.readLine(); // Ignore CSV header
+      br.readLine(); // ignore CSV header
       while ((line = br.readLine()) != null) {
         String[] data = line.split(",");
         /*
@@ -40,8 +40,7 @@ public class SalesCsvParser {
     List<String> instantiated = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
-
-      br.readLine(); // Ignore CSV header
+      br.readLine(); // ignore CSV header
 
       while ((line = br.readLine()) != null) {
         String[] data = line.split(",");

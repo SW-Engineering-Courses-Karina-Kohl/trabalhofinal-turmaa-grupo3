@@ -15,20 +15,29 @@ public class Seller {
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public int getSellerId() {
-    return sellerId;
+    return this.sellerId;
   }
 
   public List<Sale> getSales() {
     return this.sales;
-
   }
 
-  public void addSale(Sale sale) {
-    this.sales.add(sale);
+  public double getTotalSold() {
+    return setTotalSold(sales);
   }
 
+  public double setTotalSold(List<Sale> sales) {
+    double sold = 0
+    for (Sale sale: List<Sale> sales) {
+      sold += getSalePrice();
+    }
+  }
+
+   public void addSale(Sale sale) {
+     this.sales.add(sale);
+  }
 }

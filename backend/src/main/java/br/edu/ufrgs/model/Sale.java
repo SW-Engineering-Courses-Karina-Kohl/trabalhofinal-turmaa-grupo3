@@ -12,14 +12,14 @@ public class Sale {
   }
 
   public int getSellerId() {
-    return sellerId;
+    return this.sellerId;
   }
 
   public String getSaleId() {
-    return saleId;
+    return this.saleId;
   }
 
   public double getSalePrice() {
-    return salePrice;
+    return this.salePrice;
   }
 }

@@ -4,10 +4,9 @@ public class CommissionRule {
   private double minimumGoal;
   private double percentage;
 
-  public CommissionRule(double minimumGoal, double percentage) {
-
-    /* Verify values's integrity */
-    if (minimumGoal < 0 || percentage < 0 || percentage > 1) {
+  public ComissionRule(double minimumGoal, double percentage) {
+    // verify value interval
+    if (minimumGoal < 0 || percentage < 0 || percentage > 1 ) {
       throw new IllegalArgumentException("Invalid values on commissions rule!");
     }
 
@@ -16,10 +15,10 @@ public class CommissionRule {
   }
 
   public double getMinimumGoal() {
-    return minimumGoal;
+    return this.minimumGoal;
   }
 
   public double getPercentage() {
-    return percentage;
+    return this.percentage;
   }
 }

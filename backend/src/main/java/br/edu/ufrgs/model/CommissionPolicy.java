@@ -1,15 +1,16 @@
 package br.edu.ufrgs.model;
 
 import java.util.List;
+import java.util.Comparator;
 
 public class CommissionPolicy {
   private List<CommissionRule> rules;
 
   public CommissionPolicy(List<CommissionRule> rules) {
     this.rules = rules;
-    // Ordena as regras da maior meta para a menor, para garantir
-    // que o valor caia na faixa mais alta aplicável.
-    this.rules.sort((r1, r2) -> Double.compare(r2.getMinimumGoal(), r1.getMinimumGoal()));
+    // sorts rules by highest minimumGoal to guarantee that
+    // the seller will get the highest applicable comission
+    this.rules.sort(Comparator.comparing(ComissionRule::getMinimumGoal()).reversed());
   }
 
   public List<CommissionRule> getRules() {
