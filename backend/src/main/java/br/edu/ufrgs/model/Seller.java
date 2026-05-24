@@ -1,15 +1,13 @@
-// TODO: LINK SALES TO THEIR SELLERS
-
 package br.edu.ufrgs.model;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import br.edu.ufrgs.model.Sale;
 
 public class Seller {
   private String name;
   private int sellerId;
-  private double salary;
-  private List<Sale> sales;
+  private List<Sale> sales;                                     // all sales made by the seller
   
   public Seller(String name, int sellerId) {
     this.name = name;
@@ -25,19 +23,13 @@ public class Seller {
     return sellerId;
   }
 
-  public double getSalary() {
-    return this.salary; 
-  }
-
-  public void setSalary(double salary) {
-    this.salary = salary;
-  }
-
-  public List<Sale> getSales() {
+  public List<Sale> getSales(){
     return this.sales;
-  }
 
-  public void addSale(Sale sale) {
+  }
+  
+  public void addSale(Sale sale){
     this.sales.add(sale);
   }
+
 }
