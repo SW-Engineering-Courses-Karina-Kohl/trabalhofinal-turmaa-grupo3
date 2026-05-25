@@ -3,6 +3,7 @@
 This project follows a subset of **Google's Java Style Guide**. Please adhere to the following formatting standards:
 
 **Indentation:** Use **2 spaces** for indentation (do not use tabs). 
+
 **Column Limit:** Keep lines under **100 characters** to prevent horizontal scrolling.
 
 

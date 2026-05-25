@@ -26,19 +26,7 @@ public class Seller {
     return this.sales;
   }
 
-  public double getTotalSold() {
-    return setTotalSold(sales);
-  }
-
-  /* public double getTotalSold(List<Sale> sales) {
-    double sold = 0
-    for (Sale sale: List<Sale> sales) {
-      sold += getSalePrice();
-    }
-    return sold;
-  } */
-
-   public void addSale(Sale sale) {
+  public void addSale(Sale sale) {
      this.sales.add(sale);
   }
 }

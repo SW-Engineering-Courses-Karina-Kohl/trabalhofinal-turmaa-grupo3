@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.ArrayList;
 import br.edu.ufrgs.model.CommissionPolicy;
 import br.edu.ufrgs.model.CommissionRule;
-import br.edu.ufrgs.model.Commission;
 import br.edu.ufrgs.model.Seller;
 import br.edu.ufrgs.model.Sale;
 
 public class CommissionProcessing {
+
+  public record Result(int sellerId, String name, double totalSales, double commission) {}
 
   private CommissionPolicy commissions;
 
@@ -17,7 +18,7 @@ public class CommissionProcessing {
   }
 
   public List<Commission> processCommissions(List<Seller> sellers) {
-    List<Commission> results = new ArrayList<>();
+    List<Result> results = new ArrayList<>();
     List<CommissionRule> rules = this.commissions.getRules();
 
     for (Seller seller : sellers) {
@@ -36,11 +37,10 @@ public class CommissionProcessing {
           commissionValue = totalSales * rule.getPercentage();
           break; // break encerra a busca assim que acha a faixa correta
         }
-      }
 
       // cria a "folha de pagamento" (Commission) final deste vendedor e guarda
-      Commission finalCommission = new Commission(seller.getName(), seller.getSellerId(), totalSales, commissionValue);
-      results.add(finalCommission);
+      results.add(new Result(seller.sellerId, seller.name, totalSales, commissionValue)); 
+      }
     }
 
     return results;

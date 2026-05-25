@@ -17,11 +17,11 @@ public class CommissionRuleCsvParser {
 
       String line;
 
-      // Ignore CSV header
+      // ignore CSV header
       br.readLine();
 
       while ((line = br.readLine()) != null) {
-        /* Split the line by the comma. */
+        // split the line by the comma
         String[] data = line.split(",");
 
         try {
