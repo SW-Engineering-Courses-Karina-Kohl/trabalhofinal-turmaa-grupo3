@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SalesCsvParser {
-  public Map<Seller, List<Sale>> getSalesMap(String filePath) throws IOException {
-    Map<Seller, List<Sale>> salesMap = new HashMap<>();
-    Map<String, Seller> sellerIdMap = new HashMap<>();
+  public List<Seller> getSellerList(String filePath) throws IOException {
+    Map<Integer, Seller> sellerIdMap = new HashMap<>();
+    List<Seller> sellers = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
       String line;
       br.readLine(); // ignore CSV header
@@ -27,18 +27,16 @@ public class SalesCsvParser {
           Seller seller = sellerIdMap.get(data[1]);
           if (seller == null) {
             seller = new Seller(data[2], Integer.parseInt(data[1]));
-            sellerIdMap.put(data[1], seller);
+            sellerIdMap.put(Integer.parseInt(data[1]), seller);
+            sellers.add(seller);
           }
-          Sale sale = new Sale(Integer.parseInt(data[1]), data[0], Double.parseDouble(data[3]));
+          Sale sale = new Sale(Integer.parseInt(data[1]), Integer.parseInt(data[0]), Double.parseDouble(data[3]));
           seller.addSale(sale);
-          // deal with saleMap now
-          salesMap.putIfAbsent(seller, new ArrayList<>());
-          salesMap.get(seller).add(sale);
         } catch (IllegalArgumentException e) {
           System.out.println("Error parsing sale in CSV: " + e.getMessage());
         }
       }
     }
-    return salesMap;
+    return sellers;
   }
 }
