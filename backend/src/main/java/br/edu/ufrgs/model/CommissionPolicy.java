@@ -11,7 +11,7 @@ public class CommissionPolicy {
     this.rules = rules;
     // sorts rules by highest minimumGoal to guarantee that
     // the seller will get the highest applicable comission
-    this.rules.sort(Comparator.comparing(CommissionRule::getMinimumGoal()).reversed());
+    this.rules.sort(Comparator.comparing(CommissionRule::getMinimumGoal).reversed());
   }
 
   public List<CommissionRule> getRules() {
