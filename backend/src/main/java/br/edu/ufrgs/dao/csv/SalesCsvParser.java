@@ -7,6 +7,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class SalesCsvParser {
   public List<Seller> getSellerList(String filePath) throws IOException {
@@ -30,7 +32,7 @@ public class SalesCsvParser {
             sellerIdMap.put(Integer.parseInt(data[1]), seller);
             sellers.add(seller);
           }
-          Sale sale = new Sale(Integer.parseInt(data[1]), Integer.parseInt(data[0]), Double.parseDouble(data[3]));
+          Sale sale = new Sale(Integer.parseInt(data[1]), data[0], Double.parseDouble(data[3]));
           seller.addSale(sale);
         } catch (IllegalArgumentException e) {
           System.out.println("Error parsing sale in CSV: " + e.getMessage());

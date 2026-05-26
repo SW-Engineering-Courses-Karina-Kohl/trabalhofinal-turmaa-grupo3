@@ -1,16 +1,16 @@
 package br.edu.ufrgs.model;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions.*;
-// import regular Sale class to test adding sales
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SellerTest {
   private Seller seller;
 
   @BeforeEach
   public void setUp() {
-    seller = new Seller("Adriana", 896);
+    this.seller = new Seller("Adriana", 896);
   }
 
   @Test
@@ -28,11 +28,15 @@ public class SellerTest {
   @Test
   public void testGetSales() {
     List<Sale> sales = seller.getSales();
-    assertNull(sales, "List of sales should be empty");
+    assertTrue(sales.isEmpty(), "List of sales should be empty");
   }
 
+  @Test
   public void testAddSale() {
-    Sale sale = new Sale (/* pass sale parameters */);
+    Sale sale = new Sale(384, "V23", 294.99);
+    seller.addSale(sale);
+    List<Sale> sales = seller.getSales();
+    assertEquals(1, sales.size(), "There should be exactly one sale");
+    assertTrue(sales.contains(sale), "Sales should contain added sale");
   }
 }
-

@@ -17,7 +17,7 @@ public class CommissionProcessing {
     this.commissions = commisionsList;
   }
 
-  public List<Commission> processCommissions(List<Seller> sellers) {
+  public List<Result> processCommissions(List<Seller> sellers) {
     List<Result> results = new ArrayList<>();
     List<CommissionRule> rules = this.commissions.getRules();
 
@@ -39,7 +39,7 @@ public class CommissionProcessing {
         }
 
       // cria a "folha de pagamento" (Commission) final deste vendedor e guarda
-      results.add(new Result(seller.sellerId, seller.name, totalSales, commissionValue)); 
+      results.add(new Result(seller.getSellerId(), seller.getName(), totalSales, commissionValue)); 
       }
     }
 
