@@ -1,0 +1,36 @@
+services:
+  redis:
+    image: redis:7-alpine
+    networks:
+      - salesops-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  
+  backend:
+    build:
+      context: ./pseudobackend
+      dockerfile: Dockerfile
+    volumes: 
+      - "./pseudobackend:/rails"
+    environment:
+      RAILS_ENV: development
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      REDIS_URL: redis://redis:6379/1
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - salesops-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.routers.backend.service=backend-service"
+      - "traefik.http.services.backend-service.loadbalancer.server.port=3000"

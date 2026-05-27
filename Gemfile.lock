@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    algorithms (1.1.0)
     dotenv (3.2.0)
 
 PLATFORMS
@@ -8,9 +9,11 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  algorithms
   dotenv
 
 CHECKSUMS
+  algorithms (1.1.0) sha256=a9f55e4670400e85e755ab9cd4026be431c3249c3d1858fd2f64ad87897d3fdf
   dotenv (3.2.0) sha256=e375b83121ea7ca4ce20f214740076129ab8514cd81378161f11c03853fe619d
 
 BUNDLED WITH

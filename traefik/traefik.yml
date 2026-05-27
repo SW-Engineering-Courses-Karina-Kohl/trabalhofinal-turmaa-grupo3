@@ -1,0 +1,15 @@
+# traefik.yml
+api:
+  dashboard: true
+  insecure: true        # ← This makes the dashboard available directly on port 8080
+
+entryPoints:
+  web:
+    address: ":80"
+
+providers:
+  docker:
+    exposedByDefault: false
+
+log:
+  level: DEBUG          # Temporary, helps debugging

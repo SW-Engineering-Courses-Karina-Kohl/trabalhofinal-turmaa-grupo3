@@ -1,0 +1,13 @@
+frontend:
+  directory: "./frontend"
+backend:
+  pseudo:
+    directory: "./pseudobackend"
+    api_endpoint: "http://localhost:3000/api/v1"
+    ws_endpoint: "ws://localhost:3000/cable"
+    swagger_doc: "./pseudobackend/swagger/v1/"
+  normal:
+    directory: "./backend"
+    api_endpoint: "http://backend:8080/api"
+    ws_endpoint: "ws://backend:8080/todo"
+    swagger_doc: ""
