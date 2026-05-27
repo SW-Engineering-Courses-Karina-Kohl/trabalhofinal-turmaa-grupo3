@@ -1,0 +1,122 @@
+services:
+  traefik:
+    image: traefik:v3.7
+    container_name: traefik
+    restart: unless-stopped
+    ports:
+      - "80:80"      # HTTP
+      - "8080:8080"  # Traefik Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/traefik.yml:ro
+    networks:
+      - salesops-net
+      
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_SERVER_JSON_FILE: /pgadmin/connections.json
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - db
+    volumes:
+      - ./pgadmin:/pgadmin
+    networks:
+      - salesops-net
+    env_file: .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.admin.rule=Host(`admin.localhost`)"
+      - "traefik.http.routers.admin.entrypoints=web"
+      - "traefik.http.routers.admin.service=admin-service"
+      - "traefik.http.services.admin-service.loadbalancer.server.port=80"
+  
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui
+    volumes:
+      - ./${SWAGGER_DOC}:/doc
+    environment:
+      - SWAGGER_JSON=/doc/swagger.json
+    depends_on:
+      - backend
+    networks:
+      - salesops-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.swagger.rule=Host(`swagger.localhost`)"
+      - "traefik.http.routers.swagger.entrypoints=web"
+      - "traefik.http.routers.swagger.service=swagger-service"
+      - "traefik.http.services.swagger-service.loadbalancer.server.port=9090"
+      
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: salesops_development
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - salesops-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    container_name: salesops-db
+  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=${API_ENDPOINT}
+      - VITE_WS_URL=${WS_ENDPOINT}
+    depends_on:
+      - backend
+    networks:
+      - salesops-net
+    container_name: salesops-frontend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`frontend.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.routers.frontend.service=frontend-service"
+      - "traefik.http.services.frontend-service.loadbalancer.server.port=5173"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    volumes:
+      - ./backend/target/classes:/usr/local/tomcat/webapps/ROOT/WEB-INF/classes
+      - ./backend/target/dependency:/usr/local/tomcat/webapps/ROOT/WEB-INF/lib
+      - ./backend/context.xml:/usr/local/tomcat/conf/context.xml
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - salesops-net
+    container_name: salesops-backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.routers.backend.service=backend-service"
+      - "traefik.http.services.backend-service.loadbalancer.server.port=8080"
+
+volumes:
+  pg_data:
+
+networks:
+  salesops-net:
+    driver: bridge

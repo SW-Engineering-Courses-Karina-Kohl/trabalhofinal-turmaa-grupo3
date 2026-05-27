@@ -1,64 +1,123 @@
-require 'dotenv/load'
+# frozen_string_literal: true
 
-# Rakefile — SalesOps Admin orchestration
-# Requirements: ruby, docker, docker compose
+require 'dotenv/load'
+require "ostruct"
+require 'algorithms'
+require 'psych'
 
 APP_ENVIRONMENT = ENV["APP_ENV"]
-FRONTEND_DIRECTORY = ENV["FRONTEND_DIR"]
-BACKEND_DIRECTORY = ENV["BACKEND_DIR"]
-PSEUDOBACKEND_DIRECTORY = ENV["PSEUDOBACKEND_DIR"]
-PSEUDOBACKEND_WS_ENDPOINT = ENV["PSEUDOBACKEND_WS_ENDPOINT"]
-PSEUDOBACKEND_API_ENDPOINT = ENV["PSEUDOBACKEND_API_ENDPOINT"]
-PSEUDOBACKEND_SWAGGER_DOC = ENV["PSEUDOBACKEND_SWAGGER_DOC"]
 
-ENV["API_ENDPOINT"] = PSEUDOBACKEND_API_ENDPOINT
-ENV["WS_ENDPOINT"] = PSEUDOBACKEND_WS_ENDPOINT
-ENV["SWAGGER_DOC"] = "/#{PSEUDOBACKEND_DIRECTORY}/#{PSEUDOBACKEND_SWAGGER_DOC}"
+## Testes de valores individuais
+def development?
+  return APP_ENVIRONMENT == "development"
+end
 
-DOCKER_COMPOSE_FILES = "-f docker-compose.yml -f docker-compose.pseudo.yml"
+def production?
+  return APP_ENVIRONMENT == "production"
+end
 
-puts ENV["SWAGGER_DOC"]
+def pseudobackend?
+  return ENV["BACKEND_TYPE"] == "pseudo"
+end
+
+def normal_backend?
+  ENV["BACKEND_TYPE"] == "normal"
+end
+
+## Validações
+(raise "Invalid APP_ENVIRONMENT") unless development? || production?
+(raise "Invalid BACKEND_TYPE") unless pseudobackend? || normal_backend?
+
+# Restrições
+(raise "Pseudobackend cannot be run in production mode!") if production? && pseudobackend?
+
+## Setup dos arquivos docker-compose
+files = Containers::PriorityQueue.new
+
+def files.generate()
+  strs = []
+  while size() > 0
+    strs << " -f #{pop()}"
+  end
+  return strs.join
+end
+
+if development?
+  files.push("docker-compose.dev.yml", 10)
+  if pseudobackend?
+    files.push("docker-compose.dev.pseudo.yml", 9)
+  end
+else
+  files.push("docker-compose.prod.yml", 10)
+end
+
+docker_files = files.generate()
+
+services_configuration = Psych.load_file("services_configuration.yml")
+backend_configuration = if pseudobackend? then services_configuration['backend']['pseudo'] ;else services_configuration['backend']['normal'] ;end
+
+FRONTEND_DIRECTORY = services_configuration['frontend']['directory']
+BACKEND_DIRECTORY = backend_configuration['directory']
+
+ENV['BACKEND_DIR'] = BACKEND_DIRECTORY
+ENV['API_ENDPOINT'] = backend_configuration['api_endpoint']
+ENV['WS_ENDPOINT'] = backend_configuration['ws_endpoint']
+ENV['SWAGGER_DOC'] = backend_configuration['swagger_doc']
+
+# ── Utility ────────────────────────────────────────────────────────────────────
+def detached_shell(cmd, env = {})
+  pid = Process.spawn(env, "xterm", "-e", "bash", "-c", "#{cmd};exec bash")
+  Process.detach(pid)
+end
 
 # ── Docker ────────────────────────────────────────────────────────────────────
 namespace :services do
   desc "Build all Docker images"
-  task :build do
-    sh "docker compose #{DOCKER_COMPOSE_FILES} build"
+  task build: %w[build:backend] do
+    sh "docker compose #{docker_files} build"
   end
 
-  desc "Start all services (detached)"
-  task :up do
-    sh "docker compose #{DOCKER_COMPOSE_FILES} up"
+  desc "Start all services"
+  task up: %w[operations:run_normal_backend_watcher] do
+    flags = if production?
+              " -d "
+            elsif normal_backend?
+              "  "
+            else
+              ""
+            end
+    detached_shell "docker compose #{docker_files} up #{flags}", {
+      'APP_ENV' => APP_ENVIRONMENT,
+      'BACKEND_DIR' => backend_configuration['directory'],
+      'API_ENDPOINT' => backend_configuration['api_endpoint'],
+      'WS_ENDPOINT' => backend_configuration['ws_endpoint'],
+      'SWAGGER_DOC' => backend_configuration['swagger_doc']
+    }
   end
 
   desc "Stop all services"
   task :down do
-    sh "docker compose #{DOCKER_COMPOSE_FILES} down"
+    sh "docker compose #{docker_files} down"
   end
 
   desc "Tail logs for all services (or pass SERVICE=frontend)"
   task :logs do
-    svc = ENV["DOCKER_LOG_SERVICE"] || ""
-    sh "docker compose #{DOCKER_COMPOSE_FILES} logs -f #{svc}"
+    service = ENV["DOCKER_LOG_SERVICE"] || ""
+    sh "docker compose #{docker_files} logs -f #{service}"
   end
 
-  desc "Update"
-  task :update do
-    sh "docker compose #{DOCKER_COMPOSE_FILES} run backend bundle install"
-  end
-  
-  desc "Console"
-  task :console do
-    sh "docker compose #{DOCKER_COMPOSE_FILES} run backend bash"
-  end
-
-  desc "Console Swagger"
-  task :console_swagger do
-    sh "docker compose #{DOCKER_COMPOSE_FILES} run swagger-ui /bin/ash"
-  end
-  
   desc "Rebuild and restart everything from scratch"
   task restart: [:down, :build, :up]
+end
+
+namespace :console do
+  task :backend do
+    sh "docker compose #{docker_files} run backend bash"
+  end
+
+  task :swagger do
+    sh "docker compose #{docker_files} run swagger-ui /bin/ash"
+  end
 end
 
 # ── Frontend (local, no Docker) ───────────────────────────────────────────────
@@ -97,4 +156,46 @@ namespace :frontend do
   end
 end
 
+namespace :build do
+  desc "Build backend container"
+  task backend: %w[operations:build_backend operations:maven_dependencies_update operations:pseudobackend_bundle operations:pseudobackend_migrate]
+end
 
+
+desc "Separated operations for Rake internal use"
+namespace :operations do
+  task :run_normal_backend_watcher do
+    if normal_backend?
+      Dir.chdir(BACKEND_DIRECTORY) do
+        if development?
+          detached_shell("trap 'exit 0' INT\nwhile true; do find src -name \"*.java\" | entr -d -r mvn compile -Pdev -DskipTests; done")
+        else
+          detached_shell("mvn clean package -Pprod -DskipTests")
+        end
+      end
+    end
+  end
+
+  task :maven_dependencies_update do
+    if normal_backend?
+      Dir.chdir(BACKEND_DIRECTORY) do
+        sh 'mvn compile dependency:copy-dependencies -DoutputDirectory=target/dependency'
+      end
+    end
+  end
+  task :build_backend do
+    sh "docker compose #{docker_files} build backend"
+  end
+
+  task :pseudobackend_bundle do
+    if pseudobackend?
+      sh "docker compose #{docker_files} run backend bundle install"
+    end
+  end
+
+  task pseudobackend_migrate: %w[operations:build_backend operations:pseudobackend_bundle] do
+    if pseudobackend?
+      sh "docker compose #{docker_files} run backend rails db:drop db:create db:migrate db:seed"
+    end
+  end
+end

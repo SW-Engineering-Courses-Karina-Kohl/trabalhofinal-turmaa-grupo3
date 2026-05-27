@@ -1,4 +1,4 @@
-package com.youruni.controller;
+package br.edu.ufrgs.controller;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -8,7 +8,7 @@ public class HelloController {
 
     @GetMapping("/hello")
     public String hello() {
-        return "Hello from Spring Boot on Tomcat - now with a watcher! 🚀";
+        return "Hello from Spring Boot on Tomcat - now with a watcher3! 🚀";
     }
 
     @GetMapping("/hello/{name}")

@@ -93,11 +93,11 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=prod
     volumes:
       - ./backend/target:/usr/local/tomcat/webapps
     depends_on:
@@ -107,11 +107,6 @@ services:
     networks:
       - salesops-net
     container_name: salesops-backend
-    develop:
-      watch:
-        - action: rebuild
-          path: ./backend/src
-          target: /usr/local/tomcat/webapps
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
