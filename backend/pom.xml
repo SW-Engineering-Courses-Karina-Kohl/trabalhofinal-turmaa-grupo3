@@ -17,6 +17,7 @@
 		<maven.compiler.target>17</maven.compiler.target>
 		<spring-boot.version>4.0.6</spring-boot.version>
 		<maven.build.cache.enabled>true</maven.build.cache.enabled>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 
@@ -40,6 +41,14 @@
 			<artifactId>jakarta.servlet-api</artifactId>
 			<version>6.0.0</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!-- junit 5 (jupiter) -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.10.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
@@ -163,6 +172,37 @@
 							<incremental>true</incremental>
 						</configuration>
 					</plugin>
+
+					<!-- plugin do maven surefire (obrigatório para rodar junit 5 no maven) -->
+    			<plugin>
+      			<groupId>org.apache.maven.plugins</groupId>
+      			<artifactId>maven-surefire-plugin</artifactId>
+      			<version>3.2.5</version>
+    			</plugin>
+
+    			<!-- plugin do jacoco -->
+    			<plugin>
+      			<groupId>org.jacoco</groupId>
+      			<artifactId>jacoco-maven-plugin</artifactId>
+      			<version>0.8.11</version>
+      			<executions>
+        			<!-- inicializa o agente do jacoco antes dos testes rodarem -->
+        			<execution>
+          			<id>prepare-agent</id>
+          			<goals>
+            			<goal>prepare-agent</goal>
+          			</goals>
+        			</execution>
+        			<!-- gera o relatório HTML após a execução dos testes -->
+        			<execution>
+          			<id>report</id>
+          			<phase>test</phase>
+          			<goals>
+            			<goal>report</goal>
+          			</goals>
+        			</execution>
+      			</executions>
+    			</plugin>
 
 					<!-- War plugin optimization -->
 					<plugin>
