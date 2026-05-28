@@ -22,15 +22,6 @@ public class Seller {
     return this.sellerId;
   }
 
-  public double getSalary() {
-    return salary; 
-  }
-
-  public double calcSalary() {   
-    // method do calculate base salary + bonus
-    return 0.0;
-  }
-
   public List<Sale> getSales() {
     return this.sales;
   }
