@@ -34,14 +34,18 @@ public class CommissionProcessingTest {
   public void setUp() {
     commissionRuleList.add(commissionRuleOne);
     commissionRuleList.add(commissionRuleTwo);
-    this.commissionPolicy = new CommissionPolicy(commissionRuleList);
+   
+    commissionPolicy = new CommissionPolicy(commissionRuleList);
+    
     sellerOne.addSale(saleOneSellerOne);
-    sellerOne.addSale(saleOneSellerTwo);
+    sellerOne.addSale(saleTwoSellerOne);
     sellerTwo.addSale(saleOneSellerTwo);
     sellerTwo.addSale(saleTwoSellerTwo);
     sellers.add(sellerOne);
     sellers.add(sellerTwo);
-    this.commissionProcessor = new CommissionProcessing(commissionPolicy);
+   
+    commissionProcessor = new CommissionProcessing(commissionPolicy);
+   
     expectedResults.add(lineOne);
     expectedResults.add(lineTwo);
   }
@@ -49,7 +53,10 @@ public class CommissionProcessingTest {
   @Test
   public void testProcessCommissions() {
     results = commissionProcessor.processCommissions(sellers);
-  
+
+    assertFalse(expectedResults.isEmpty(), "Lista expectedResults não pode estar vazia");
+    assertFalse(results.isEmpty(), "Lista results não pode estar vazia");
+
     // make all necessary comparisons, field by field
     assertEquals(expectedResults.get(0).sellerId(), results.get(0).sellerId(),
                  "SellerId do primeiro vendedor deve ser igual");
@@ -59,10 +66,13 @@ public class CommissionProcessingTest {
                  "Total de vendas do primeiro vendedor deve ser igual");
     assertEquals(expectedResults.get(0).commission(), results.get(0).commission(),
                  "Comissão do primeiro vendedor deve ser igual");
-    assertEquals(expectedResults.get(1).sellerId(), results.get(1).sellerId(),
-                 "SellerId do segundo vendedor deve ser igual");
+   
     assertEquals(expectedResults.get(1).name(), results.get(1).name(),
                  "Nome do segundo vendedor deve ser igual");
+    // problematic
+    assertEquals(expectedResults.get(1).sellerId(), results.get(1).sellerId(),
+                 "SellerId do segundo vendedor deve ser igual");
+    
     assertEquals(expectedResults.get(1).totalSales(), results.get(1).totalSales(),
                  "Total de vendas do segundo vendedor deve ser igual");
     assertEquals(expectedResults.get(1).commission(), results.get(1).commission(),
