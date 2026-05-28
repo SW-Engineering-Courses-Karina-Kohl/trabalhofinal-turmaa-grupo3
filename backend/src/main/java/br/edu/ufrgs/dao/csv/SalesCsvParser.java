@@ -26,7 +26,7 @@ public class SalesCsvParser {
          * data[3]: salePrice
          */
         try {
-          Seller seller = sellerIdMap.get(data[1]);
+          Seller seller = sellerIdMap.get(Integer.parseInt(data[1]));
           if (seller == null) {
             seller = new Seller(data[2], Integer.parseInt(data[1]));
             sellerIdMap.put(Integer.parseInt(data[1]), seller);
