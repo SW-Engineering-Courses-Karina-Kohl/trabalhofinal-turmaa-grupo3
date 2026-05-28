@@ -1,7 +1,5 @@
 package br.edu.ufrgs.service;
 
-import java.util.List;
-import java.util.ArrayList;
 import br.edu.ufrgs.service.CommissionProcessing;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
