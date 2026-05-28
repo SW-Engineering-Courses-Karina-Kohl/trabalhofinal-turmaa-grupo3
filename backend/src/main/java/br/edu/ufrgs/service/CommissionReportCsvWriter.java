@@ -11,12 +11,12 @@ import java.util.List;
 public class CommissionReportCsvWriter {
   public void write(List<CommissionProcessing.Result> results, String filePath) throws IOException {
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-      writer.write("seller_id, name, total_sales, commission");
+      writer.write("seller_id,name,total_sales,commission");
       writer.newLine();
 
       for (CommissionProcessing.Result result : results) {
         writer.write(String.format("%d, %s, %.2f, %.2f", result.sellerId(),
-          result.name(), result.totalSales(), result.commission()));
+          escapeCsv(result.name()), result.totalSales(), result.commission()));
           writer.newLine();
       }
     }
