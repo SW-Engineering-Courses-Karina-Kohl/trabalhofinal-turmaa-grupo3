@@ -13,8 +13,8 @@ public class CommissionProcessing {
 
   private CommissionPolicy commissions;
 
-  public CommissionProcessing(CommissionPolicy commisionsList) {
-    this.commissions = commisionsList;
+  public CommissionProcessing(CommissionPolicy commissionsList) {
+    this.commissions = commissionsList;
   }
 
   public List<Result> processCommissions(List<Seller> sellers) {
@@ -37,10 +37,8 @@ public class CommissionProcessing {
           commissionValue = totalSales * rule.getPercentage();
           break; // break encerra a busca assim que acha a faixa correta
         }
-
-      // cria a "folha de pagamento" (Commission) final deste vendedor e guarda
-      results.add(new Result(seller.getSellerId(), seller.getName(), totalSales, commissionValue)); 
-      }
+      } 
+        results.add(new Result(seller.getSellerId(), seller.getName(), totalSales, commissionValue)); 
     }
 
     return results;
