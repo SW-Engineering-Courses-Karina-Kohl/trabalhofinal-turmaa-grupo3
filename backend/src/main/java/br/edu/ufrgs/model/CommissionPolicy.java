@@ -1,12 +1,13 @@
 package br.edu.ufrgs.model;
 
-import java.util.List;
-import java.util.Comparator;
 import br.edu.ufrgs.model.CommissionRule;
+import java.util.Comparator;
+import java.util.List;
 
+// @what: class to encapsulate list of rules
 public class CommissionPolicy {
   private List<CommissionRule> rules;
-
+  
   public CommissionPolicy(List<CommissionRule> rules) {
     this.rules = rules;
     // sorts rules by highest minimumGoal to guarantee that

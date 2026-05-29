@@ -3,6 +3,7 @@ package br.edu.ufrgs.model;
 import java.util.List;
 import java.util.ArrayList;
 
+// @what: class to represent a seller
 public class Seller {
   private String name;
   private int sellerId;

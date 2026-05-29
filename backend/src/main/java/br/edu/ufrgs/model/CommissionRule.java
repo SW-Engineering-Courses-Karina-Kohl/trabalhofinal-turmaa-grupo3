@@ -1,5 +1,6 @@
 package br.edu.ufrgs.model;
 
+// @what: class to represent a single commission rule
 public class CommissionRule {
   private double minimumGoal;
   private double percentage;
