@@ -19,38 +19,172 @@ public class CommissionReportCsvWriterTest {
   // @what: set up mocks for testing
   @BeforeEach
   public void setUp() {
-    CommissionProcessing.Result lineOne = new CommissionProcessing.Result(01, "João,", 11000.00, 880.00);
-    CommissionProcessing.Result lineTwo = new CommissionProcessing.Result(01, "M\naria", 12000.00, 960.00);
-    results.add(lineOne);
-    results.add(lineTwo);
-    this.writer = new CommissionReportCsvWriter();
+   this.writer = new CommissionReportCsvWriter();
   }
 
-  // @what: test output CSV writer and compare to expected result
+  // @what: test write with badly formatted seller name
   @Test
-  public void writeTest() throws Exception{
+  public void writeTestCommaInName() throws Exception{
+    CommissionProcessing.Result inputLineOne = new CommissionProcessing.Result
+      (01, "João,", 11000.00, 880.00);
+    CommissionProcessing.Result inputLineTwo = new CommissionProcessing.Result
+      (01, "Maria", 12000.00, 960.00);
+    results.add(inputLineOne);
+    results.add(inputLineTwo);
     String filePath = "src/test/resources/data/comissoes_consolidadas.csv";
     writer.write(results, filePath);
     File outputFile = new File(filePath);
-    assertTrue(outputFile.exists(), "Ouput file should exist.");
+    assertTrue(outputFile.exists(), "output file should exist.");
     try {
       // get all lines from output CSV
       List<String> fileLines = Files.readAllLines(Paths.get(filePath));
       String lineTwo = fileLines.get(0);
       String[] charLineTwo = lineTwo.split(",");
 
-      assertEquals(results.get(0).sellerId(), Integer.parseInt(charLineTwo[0]), "sellerId should be the same in line 2.");
-      assertEquals(results.get(0).name(), charLineTwo[1], "seller name should be the same in line 2.");
-      assertEquals(results.get(0).totalSales(), Double.parseDouble(charLineTwo[2]), "totalSales should be the same in line 2.");
-      assertEquals(results.get(0).commission(), Double.parseDouble(charLineTwo[3]), "commission should be the same in line 2.");
+      assertEquals(results.get(0).sellerId(), Integer.parseInt(charLineTwo[0]), 
+          "sellerId should be the same in line 2.");
+      assertEquals("João", charLineTwo[1], "seller name should be the same in line 2.");
+      assertEquals(results.get(0).totalSales(), Double.parseDouble(charLineTwo[2]),
+          "totalSales should be the same in line 2.");
+      assertEquals(results.get(0).commission(), Double.parseDouble(charLineTwo[3]),
+          "commission should be the same in line 2.");
 
       String lineThree = fileLines.get(1);
       String[] charLineThree = lineThree.split(",");
 
-      assertEquals(results.get(1).sellerId(), Integer.parseInt(charLineThree[0]), "sellerId should be the same in line 3.");
-      assertEquals(results.get(1).name(), charLineThree[1], "seller name should be the same in line 3.");
-      assertEquals(results.get(1).totalSales(), Double.parseDouble(charLineThree[2]), "totalSales should be the same in line 3.");
-      assertEquals(results.get(1).commission(), Double.parseDouble(charLineThree[3]), "commission should be the same in line 3.");
+      assertEquals(results.get(1).sellerId(), Integer.parseInt(charLineThree[0]),
+          "sellerId should be the same in line 3.");
+      assertEquals("Maria", charLineThree[1], "seller name should be the same in line 3.");
+      assertEquals(results.get(1).totalSales(), Double.parseDouble(charLineThree[2]),
+          "totalSales should be the same in line 3.");
+      assertEquals(results.get(1).commission(), Double.parseDouble(charLineThree[3]),
+          "commission should be the same in line 3.");
+    } catch (Exception e) {
+      System.out.println("error: " + e.getMessage());
+    }
+  }
+
+  // @what: test write with badly formatted seller name
+  @Test
+  public void writeTestLineBreakInName() throws Exception{
+    CommissionProcessing.Result inputLineOne = new CommissionProcessing.Result
+      (01, "João", 11000.00, 880.00);
+    CommissionProcessing.Result inputLineTwo = new CommissionProcessing.Result
+      (01, "Maria\n", 12000.00, 960.00);
+    results.add(inputLineOne);
+    results.add(inputLineTwo);
+    String filePath = "src/test/resources/data/comissoes_consolidadas.csv";
+    writer.write(results, filePath);
+    File outputFile = new File(filePath);
+    assertTrue(outputFile.exists(), "output file should exist.");
+    try {
+      // get all lines from output CSV
+      List<String> fileLines = Files.readAllLines(Paths.get(filePath));
+      String lineTwo = fileLines.get(0);
+      String[] charLineTwo = lineTwo.split(",");
+
+      assertEquals(results.get(0).sellerId(), Integer.parseInt(charLineTwo[0]),
+          "sellerId should be the same in line 2.");
+      assertEquals("João", charLineTwo[1], "seller name should be the same in line 2.");
+      assertEquals(results.get(0).totalSales(), Double.parseDouble(charLineTwo[2]),
+          "totalSales should be the same in line 2.");
+      assertEquals(results.get(0).commission(), Double.parseDouble(charLineTwo[3]),
+          "commission should be the same in line 2.");
+
+      String lineThree = fileLines.get(1);
+      String[] charLineThree = lineThree.split(",");
+
+      assertEquals(results.get(1).sellerId(), Integer.parseInt(charLineThree[0]),
+          "sellerId should be the same in line 3.");
+      assertEquals("Maria", charLineThree[1], "seller name should be the same in line 3.");
+      assertEquals(results.get(1).totalSales(), Double.parseDouble(charLineThree[2]),
+          "totalSales should be the same in line 3.");
+      assertEquals(results.get(1).commission(), Double.parseDouble(charLineThree[3]),
+          "commission should be the same in line 3.");
+    } catch (Exception e) {
+      System.out.println("error: " + e.getMessage());
+    }
+  }
+  
+  // @what: test write with badly formatted seller name
+  @Test
+  public void writeTestBacklashQuoteInName() throws Exception{
+    CommissionProcessing.Result inputLineOne = new CommissionProcessing.Result
+      (01, "João", 11000.00, 880.00);
+    CommissionProcessing.Result inputLineTwo = new CommissionProcessing.Result
+      (01, "Maria\"", 12000.00, 960.00);
+    results.add(inputLineOne);
+    results.add(inputLineTwo);
+    String filePath = "src/test/resources/data/comissoes_consolidadas.csv";
+    writer.write(results, filePath);
+    File outputFile = new File(filePath);
+    assertTrue(outputFile.exists(), "output file should exist.");
+    try {
+      // get all lines from output CSV
+      List<String> fileLines = Files.readAllLines(Paths.get(filePath));
+      String lineTwo = fileLines.get(0);
+      String[] charLineTwo = lineTwo.split(",");
+
+      assertEquals(results.get(0).sellerId(), Integer.parseInt(charLineTwo[0]),
+          "sellerId should be the same in line 2.");
+      assertEquals("João", charLineTwo[1], "seller name should be the same in line 2.");
+      assertEquals(results.get(0).totalSales(), Double.parseDouble(charLineTwo[2]),
+          "totalSales should be the same in line 2.");
+      assertEquals(results.get(0).commission(), Double.parseDouble(charLineTwo[3]),
+          "commission should be the same in line 2.");
+
+      String lineThree = fileLines.get(1);
+      String[] charLineThree = lineThree.split(",");
+
+      assertEquals(results.get(1).sellerId(), Integer.parseInt(charLineThree[0]),
+          "sellerId should be the same in line 3.");
+      assertEquals("João", charLineThree[1], "seller name should be the same in line 3.");
+      assertEquals(results.get(1).totalSales(), Double.parseDouble(charLineThree[2]),
+          "totalSales should be the same in line 3.");
+      assertEquals(results.get(1).commission(), Double.parseDouble(charLineThree[3]),
+          "commission should be the same in line 3.");
+    } catch (Exception e) {
+      System.out.println("error: " + e.getMessage());
+    }
+  }
+ 
+  // @what: test write with badly formatted seller name
+  @Test
+  public void writeTestNullName() throws Exception{
+    CommissionProcessing.Result inputLineOne = new CommissionProcessing.Result
+      (01, null, 11000.00, 880.00);
+    CommissionProcessing.Result inputLineTwo = new CommissionProcessing.Result
+      (01, "Maria", 12000.00, 960.00);
+    results.add(inputLineOne);
+    results.add(inputLineTwo);
+    String filePath = "src/test/resources/data/comissoes_consolidadas.csv";
+    writer.write(results, filePath);
+    File outputFile = new File(filePath);
+    assertTrue(outputFile.exists(), "output file should exist.");
+    try {
+      // get all lines from output CSV
+      List<String> fileLines = Files.readAllLines(Paths.get(filePath));
+      String lineTwo = fileLines.get(0);
+      String[] charLineTwo = lineTwo.split(",");
+
+      assertEquals(results.get(0).sellerId(), Integer.parseInt(charLineTwo[0]),
+          "sellerId should be the same in line 2.");
+      assertEquals("João", charLineTwo[1], "seller name should be the same in line 2.");
+      assertEquals(results.get(0).totalSales(), Double.parseDouble(charLineTwo[2]),
+          "totalSales should be the same in line 2.");
+      assertEquals(results.get(0).commission(), Double.parseDouble(charLineTwo[3]),
+          "commission should be the same in line 2.");
+
+      String lineThree = fileLines.get(1);
+      String[] charLineThree = lineThree.split(",");
+
+      assertEquals(results.get(1).sellerId(), Integer.parseInt(charLineThree[0]),
+          "sellerId should be the same in line 3.");
+      assertEquals("Maria", charLineThree[1], "seller name should be the same in line 3.");
+      assertEquals(results.get(1).totalSales(), Double.parseDouble(charLineThree[2]),
+          "totalSales should be the same in line 3.");
+      assertEquals(results.get(1).commission(), Double.parseDouble(charLineThree[3]),
+          "commission should be the same in line 3.");
     } catch (Exception e) {
       System.out.println("error: " + e.getMessage());
     }
