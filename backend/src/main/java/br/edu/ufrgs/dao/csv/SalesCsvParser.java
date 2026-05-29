@@ -39,10 +39,11 @@ public class SalesCsvParser {
           Sale sale = new Sale(Integer.parseInt(data[1]), data[0], Double.parseDouble(data[3]));
           seller.addSale(sale);
         } catch (IllegalArgumentException e) {
-          System.out.println("Error parsing sale in CSV: " + e.getMessage());
+          System.out.println("error parsing sale in CSV: " + e.getMessage());
         }
       }
     }
+
     return sellers;
   }
 }

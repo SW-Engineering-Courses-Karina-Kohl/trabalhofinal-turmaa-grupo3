@@ -28,7 +28,7 @@ public class CommissionRuleCsvParser {
           double percentage = Double.parseDouble(data[1]);
           rules.add(new CommissionRule(minimumGoal, percentage));
         } catch (IllegalArgumentException e) {
-          System.out.println("Error: Invalid value in csv! " + e.getMessage());
+          System.out.println("error: invalid value in CSV! " + e.getMessage());
         }
       }
     }

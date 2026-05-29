@@ -11,10 +11,9 @@ public class CommissionReportCsvWriter {
   // @what: generate and write data to output CSV
   // @param: List<Result> results -> list of lines to be written 
   // @param: String filePath -> output location (with file name)
-  // @return: nothing
+  // @return: void
   public void write(List<CommissionProcessing.Result> results, String filePath) throws IOException {
     File outputFile = new File(filePath);
-
     // check if file exists
     // if not, create one
     if (outputFile.exists()) {

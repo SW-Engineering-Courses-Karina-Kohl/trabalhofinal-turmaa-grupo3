@@ -1,14 +1,14 @@
 package br.edu.ufrgs.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import br.edu.ufrgs.model.CommissionPolicy;
+import br.edu.ufrgs.model.CommissionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import br.edu.ufrgs.model.Seller;
 import br.edu.ufrgs.model.Sale;
-import br.edu.ufrgs.model.CommissionRule;
-import br.edu.ufrgs.model.CommissionPolicy;
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class CommissionProcessingTest {
   private CommissionProcessing commissionProcessor;
@@ -25,57 +25,47 @@ public class CommissionProcessingTest {
   private Sale saleTwoSellerTwo = new Sale(37, "V04", 200.00);
   List<CommissionProcessing.Result> results = new ArrayList<>();
   List<CommissionProcessing.Result> expectedResults = new ArrayList<>();
-  
-  // this might be problematic as CommissionProcessing has not been instantiated yet
   CommissionProcessing.Result lineOne = new CommissionProcessing.Result(67, "João", 1400.00, 0.00);
   CommissionProcessing.Result lineTwo = new CommissionProcessing.Result(37, "Ismael", 9000.00, 900.00);
-  
+ 
+  // @what: set up mocks for testing
   @BeforeEach
   public void setUp() {
     commissionRuleList.add(commissionRuleOne);
     commissionRuleList.add(commissionRuleTwo);
-   
     commissionPolicy = new CommissionPolicy(commissionRuleList);
-    
     sellerOne.addSale(saleOneSellerOne);
     sellerOne.addSale(saleTwoSellerOne);
     sellerTwo.addSale(saleOneSellerTwo);
     sellerTwo.addSale(saleTwoSellerTwo);
     sellers.add(sellerOne);
     sellers.add(sellerTwo);
-   
     commissionProcessor = new CommissionProcessing(commissionPolicy);
-   
     expectedResults.add(lineOne);
     expectedResults.add(lineTwo);
   }
 
+  // @what: test processing of commissions
   @Test
   public void testProcessCommissions() {
     results = commissionProcessor.processCommissions(sellers);
-
-    assertFalse(expectedResults.isEmpty(), "Lista expectedResults não pode estar vazia");
-    assertFalse(results.isEmpty(), "Lista results não pode estar vazia");
-
-    // make all necessary comparisons, field by field
+    assertFalse(expectedResults.isEmpty(), "expectedResults list should not be empty.");
+    assertFalse(results.isEmpty(), "results list should not be empty.");
     assertEquals(expectedResults.get(0).sellerId(), results.get(0).sellerId(),
-                 "SellerId do primeiro vendedor deve ser igual");
+                 "sellerId of first seller should be the same.");
     assertEquals(expectedResults.get(0).name(), results.get(0).name(),
-                 "Nome do primeiro vendedor deve ser igual");
+                 "name of first seller should be the same.");
     assertEquals(expectedResults.get(0).totalSales(), results.get(0).totalSales(),
-                 "Total de vendas do primeiro vendedor deve ser igual");
+                 "totalSales of first seller should be the same.");
     assertEquals(expectedResults.get(0).commission(), results.get(0).commission(),
-                 "Comissão do primeiro vendedor deve ser igual");
-   
+                 "commission of first seller should be the same.");
     assertEquals(expectedResults.get(1).name(), results.get(1).name(),
-                 "Nome do segundo vendedor deve ser igual");
-    // problematic
+                 "name of second seller should be the same.");
     assertEquals(expectedResults.get(1).sellerId(), results.get(1).sellerId(),
-                 "SellerId do segundo vendedor deve ser igual");
-    
+                 "sellerId of second seller should be the same.");
     assertEquals(expectedResults.get(1).totalSales(), results.get(1).totalSales(),
-                 "Total de vendas do segundo vendedor deve ser igual");
+                 "totalSales of second seller should be the same.");
     assertEquals(expectedResults.get(1).commission(), results.get(1).commission(),
-                 "Comissão do segundo vendedor deve ser igual");
+                 "commission of second seller should be the same.");
   }
 } 
