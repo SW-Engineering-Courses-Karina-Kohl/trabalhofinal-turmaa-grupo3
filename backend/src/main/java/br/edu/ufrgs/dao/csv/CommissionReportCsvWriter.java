@@ -7,8 +7,18 @@ import java.io.IOException;
 import java.util.List;
 
 public class CommissionReportCsvWriter {
-  public void write(List<CommissionProcessing.Result> results, String filePath) throws IOException {
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+  public void write(List<CommissionProcessing.Result> results) throws IOException {
+
+    String filePath = "src/main/resources/data/comissoes_consolidadas.csv";
+
+    try {
+      // put it all inside the try catch
+      File outputFile = new File(filePath);
+      if (outputFile.exists()) {
+        outputFile.delete();
+        outputFile.createNewFile();
+      }
+      BufferedWriter writer = new BufferedWriter(new FileWriter(filePath)); 
       writer.write("seller_id,name,total_sales,commission");
       writer.newLine();
 
@@ -17,6 +27,7 @@ public class CommissionReportCsvWriter {
                      escapeCsv(result.name()), result.totalSales(), result.commission()));
         writer.newLine();
       }
+      writer.close();
     }
   }
 
