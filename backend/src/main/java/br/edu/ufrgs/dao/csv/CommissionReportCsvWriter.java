@@ -1,12 +1,10 @@
-package br.edu.ufrgs.service;
+package br.edu.ufrgs.dao.csv;
 
 import br.edu.ufrgs.service.CommissionProcessing;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-
-
 
 public class CommissionReportCsvWriter {
   public void write(List<CommissionProcessing.Result> results, String filePath) throws IOException {
@@ -16,18 +14,19 @@ public class CommissionReportCsvWriter {
 
       for (CommissionProcessing.Result result : results) {
         writer.write(String.format("%d, %s, %.2f, %.2f", result.sellerId(),
-          escapeCsv(result.name()), result.totalSales(), result.commission()));
-          writer.newLine();
+                     escapeCsv(result.name()), result.totalSales(), result.commission()));
+        writer.newLine();
       }
     }
   }
-// Helper for invalid csv values input (, ", \n)
+
+  // helper for invalid csv values input (, ", \n)
   private String escapeCsv(String value) {
     if (value == null) {
-        return "";
+      return "";
     }
     if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-        return "\"" + value.replace("\"", "\"\"") + "\"";
+      return "\"" + value.replace("\"", "\"\"") + "\"";
     }
     return value;
   }
