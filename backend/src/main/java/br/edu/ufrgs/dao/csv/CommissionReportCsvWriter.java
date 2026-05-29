@@ -28,7 +28,7 @@ public class CommissionReportCsvWriter {
 
       for (CommissionProcessing.Result result : results) {
         writer.write(String.format("%d,%s,%.2f,%.2f", result.sellerId(),
-              escapeCsv(result.name()), result.totalSales(), result.commission()));
+              result.name(), result.totalSales(), result.commission()));
         writer.newLine();
       }
 
@@ -36,18 +36,20 @@ public class CommissionReportCsvWriter {
     }
   }
 
+  /*
   // @what: helper for invalid seller name
   // @param: String value -> seller's name
   // @return: "corrected" value
   private String escapeCsv(String value) {
-    if (value == null) {
-      return "";
-    }
-
-    if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
-      return "\"" + value.replace("\"", "\"\"") + "\"";
-    }
-
-    return value;
+  if (value == null) {
+  return "";
   }
+
+  if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+  return "\"" + value.replace("\"", "\"\"") + "\"";
+  }
+
+  return value;
+  }
+  */
 }
