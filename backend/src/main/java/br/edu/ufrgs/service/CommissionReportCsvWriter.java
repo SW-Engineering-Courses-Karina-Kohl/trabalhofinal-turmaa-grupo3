@@ -21,7 +21,7 @@ public class CommissionReportCsvWriter {
       }
     }
   }
-
+// Helper for invalid csv values input (, ", \n)
   private String escapeCsv(String value) {
     if (value == null) {
         return "";
