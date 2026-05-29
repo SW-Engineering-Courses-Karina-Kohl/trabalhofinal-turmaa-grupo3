@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.List;
 
 public class CommissionReportCsvWriter {
-  public void write(List<CommissionProcessing.Result> results) throws IOException {
+  public void write(List<CommissionProcessing.Result> results, String filePath) throws IOException {
 
-    String filePath = "src/main/resources/data/comissoes_consolidadas.csv";
+    // String filePath = "src/main/resources/data/comissoes_consolidadas.csv";
 
     try {
       // put it all inside the try catch
