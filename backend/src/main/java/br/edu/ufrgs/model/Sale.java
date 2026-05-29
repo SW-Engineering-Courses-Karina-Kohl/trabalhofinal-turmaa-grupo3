@@ -1,5 +1,6 @@
 package br.edu.ufrgs.model;
 
+// @what: class to represent a sale
 public class Sale {
   private int sellerId;
   private String saleId;

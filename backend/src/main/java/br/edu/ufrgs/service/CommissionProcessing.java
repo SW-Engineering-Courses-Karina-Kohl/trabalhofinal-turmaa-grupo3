@@ -8,7 +8,7 @@ import br.edu.ufrgs.model.Seller;
 import br.edu.ufrgs.model.Sale;
 
 public class CommissionProcessing {
-
+  // custom structure to store information for output CSV
   public record Result(int sellerId, String name, double totalSales, double commission) {}
 
   private CommissionPolicy commissions;
@@ -17,25 +17,28 @@ public class CommissionProcessing {
     this.commissions = commissionsList;
   }
 
+  // @what: calculate seller commission and prepare write-ready info for output CSV
+  // @param: List<Seller> seller -> list of sellers
+  // @return: List<Result> results -> lines to write to output CSV
   public List<Result> processCommissions(List<Seller> sellers) {
     List<Result> results = new ArrayList<>();
+    // rules is a pointer
     List<CommissionRule> rules = this.commissions.getRules();
 
     for (Seller seller : sellers) {
       double totalSales = 0.0;
 
-      // soma todas as vendas que foram previamente associadas a este vendedor
       for (Sale sale : seller.getSales()) {
         totalSales += sale.getSalePrice();
       }
 
       double commissionValue = 0.0;
 
-      // descobre em qual faixa de comissão o valor se encaixa
+      // check what commission range seller belongs to
       for (CommissionRule rule : rules) {
         if (totalSales >= rule.getMinimumGoal()) {
           commissionValue = totalSales * rule.getPercentage();
-          break; // break encerra a busca assim que acha a faixa correta
+          break; // terminate loop when range found        
         }
       } 
         results.add(new Result(seller.getSellerId(), seller.getName(), totalSales, commissionValue)); 

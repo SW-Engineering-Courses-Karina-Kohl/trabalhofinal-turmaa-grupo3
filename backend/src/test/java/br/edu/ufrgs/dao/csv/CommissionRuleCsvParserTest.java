@@ -1,12 +1,12 @@
 package br.edu.ufrgs.dao.csv;
 
-import java.util.List;
-import java.util.ArrayList;
+import static org.junit.jupiter.api.Assertions.*;
 import br.edu.ufrgs.model.CommissionPolicy;
 import br.edu.ufrgs.model.CommissionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommissionRuleCsvParserTest {
   private CommissionRuleCsvParser parser;
@@ -14,6 +14,7 @@ public class CommissionRuleCsvParserTest {
   private CommissionPolicy commissionPolicy;
   private CommissionPolicy parserCommissionPolicy;
 
+  // @what: set up mocks for testing
   @BeforeEach 
   public void setUp() {
     CommissionRule ruleOne = new CommissionRule(0.00, 0.05);
@@ -21,26 +22,26 @@ public class CommissionRuleCsvParserTest {
     commissionRuleList.add(ruleOne);
     commissionRuleList.add(ruleTwo);
     commissionPolicy = new CommissionPolicy(commissionRuleList);
+    this.parser = new CommissionRuleCsvParser();
   }
 
+  // @what: test parser
   @Test
   public void testReadRules() throws Exception {
-    this.parser = new CommissionRuleCsvParser();
-    parserCommissionPolicy = parser.readRules("src/test/resources/data/regras_comissao.csv");
-    //test every field
+    parserCommissionPolicy = this.parser.readRules("src/test/resources/data/regras_comissao.csv");
     assertEquals(commissionPolicy.getRules().size(), parserCommissionPolicy.getRules().size(),
-                 "Tamanho das listas de regras deve ser igual.");
+        "size of commission rule list should be the same.");
     assertEquals(commissionPolicy.getRules().get(0).getMinimumGoal(),
-                 parserCommissionPolicy.getRules().get(0).getMinimumGoal(),
-                 "Objetivo mínimo da faixa maior deve ser igual.");
-     assertEquals(commissionPolicy.getRules().get(0).getPercentage(),
-                  parserCommissionPolicy.getRules().get(0).getPercentage(),
-                  "Porcentagem da faixa maior deve ser igual.");
-     assertEquals(commissionPolicy.getRules().get(1).getMinimumGoal(),
-                  parserCommissionPolicy.getRules().get(1).getMinimumGoal(),
-                  "Objetivo mínimo da faixa menor deve ser igual.");
-     assertEquals(commissionPolicy.getRules().get(1).getPercentage(),
-                  parserCommissionPolicy.getRules().get(1).getPercentage(),
-                  "Porcentagem da faixa menor deve ser igual.");
+        parserCommissionPolicy.getRules().get(0).getMinimumGoal(),
+        "minimumGoal of lower range should be the same.");
+    assertEquals(commissionPolicy.getRules().get(0).getPercentage(),
+        parserCommissionPolicy.getRules().get(0).getPercentage(),
+        "percentage of lower range should be the same.");
+    assertEquals(commissionPolicy.getRules().get(1).getMinimumGoal(),
+        parserCommissionPolicy.getRules().get(1).getMinimumGoal(),
+        "minimumGoal of higher range should be the same.");
+    assertEquals(commissionPolicy.getRules().get(1).getPercentage(),
+        parserCommissionPolicy.getRules().get(1).getPercentage(),
+        "percentage of higher range should be the same.");
   }
 }

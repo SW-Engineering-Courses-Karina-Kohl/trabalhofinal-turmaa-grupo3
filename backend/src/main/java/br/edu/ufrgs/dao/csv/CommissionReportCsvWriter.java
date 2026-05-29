@@ -2,44 +2,52 @@ package br.edu.ufrgs.dao.csv;
 
 import br.edu.ufrgs.service.CommissionProcessing;
 import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileWriter;
 import java.util.List;
 import java.io.File;
 
 public class CommissionReportCsvWriter {
+  // @what: generate and write data to output CSV
+  // @param: List<Result> results -> list of lines to be written 
+  // @param: String filePath -> output location (with file name)
+  // @return: void
   public void write(List<CommissionProcessing.Result> results, String filePath) throws IOException {
-
-    // String filePath = "src/main/resources/data/comissoes_consolidadas.csv";
-
-    // put it all inside the try catch
     File outputFile = new File(filePath);
+    // check if file exists
+    // if not, create one
     if (outputFile.exists()) {
       outputFile.delete();
       outputFile.createNewFile();
     }
 
+    // write-to-file logic 
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
       writer.write("seller_id,name,total_sales,commission");
       writer.newLine();
 
       for (CommissionProcessing.Result result : results) {
         writer.write(String.format("%d,%s,%.2f,%.2f", result.sellerId(),
-                     escapeCsv(result.name()), result.totalSales(), result.commission()));
+              escapeCsv(result.name()), result.totalSales(), result.commission()));
         writer.newLine();
       }
+
       writer.close();
     }
   }
 
-  // helper for invalid csv values input (, ", \n)
-  /* private String escapeCsv(String value) {
+  // @what: helper for invalid seller name
+  // @param: String value -> seller's name
+  // @return: "corrected" value
+  private String escapeCsv(String value) {
     if (value == null) {
       return "";
     }
+
     if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
       return "\"" + value.replace("\"", "\"\"") + "\"";
     }
+
     return value;
-  } */
+  }
 }
