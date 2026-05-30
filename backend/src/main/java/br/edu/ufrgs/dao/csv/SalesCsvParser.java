@@ -40,6 +40,7 @@ public class SalesCsvParser {
           seller.addSale(sale);
         } catch (IllegalArgumentException e) {
           System.out.println("error parsing sale in CSV: " + e.getMessage());
+          throw new IllegalArgumentException("error parsing parsing sale in CSV.");
         }
       }
     }

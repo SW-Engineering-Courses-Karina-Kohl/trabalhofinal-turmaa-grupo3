@@ -67,6 +67,51 @@ public class CommissionReportCsvWriterTest {
     }
   }
 
+  // @what: test write method with non-existing file
+  @Test
+  public void testWriterNonExistingFile() throws Exception{
+    CommissionProcessing.Result inputLineOne = new CommissionProcessing.Result
+      (01, "Ismael", 11000.00, 880.00);
+    CommissionProcessing.Result inputLineTwo = new CommissionProcessing.Result
+      (02, "Maria", 12000.00, 960.00);
+    results.add(inputLineOne);
+    results.add(inputLineTwo);
+    String filePath = "src/test/resources/data/comissoes_consolidadas_dois.csv";
+    writer.write(results, filePath);
+    File outputFile = new File(filePath);
+    assertTrue(outputFile.exists(), "output file should exist.");
+    try {
+      // get all lines from output CSV
+      List<String> fileLines = Files.readAllLines(Paths.get(filePath));
+      String lineTwo = fileLines.get(1);
+      String[] charLineTwo = lineTwo.split(",");
+
+      assertEquals(results.get(0).sellerId(), Integer.parseInt(charLineTwo[0]), 
+          "sellerId should be the same in line 2.");
+      assertEquals(results.get(0).name(), charLineTwo[1],
+          "seller name should be the same in line 2.");
+      assertEquals(results.get(0).totalSales(), Double.parseDouble(charLineTwo[2]),
+          "totalSales should be the same in line 2.");
+      assertEquals(results.get(0).commission(), Double.parseDouble(charLineTwo[3]),
+          "commission should be the same in line 2.");
+
+      String lineThree = fileLines.get(2);
+      String[] charLineThree = lineThree.split(",");
+
+      assertEquals(results.get(1).sellerId(), Integer.parseInt(charLineThree[0]),
+          "sellerId should be the same in line 3.");
+      assertEquals(results.get(1).name(), charLineThree[1],
+          "seller name should be the same in line 3.");
+      assertEquals(results.get(1).totalSales(), Double.parseDouble(charLineThree[2]),
+          "totalSales should be the same in line 3.");
+      assertEquals(results.get(1).commission(), Double.parseDouble(charLineThree[3]),
+          "commission should be the same in line 3.");
+    } catch (Exception e) {
+      System.out.println("error: " + e.getMessage());
+    }
+  }
+
+
   /*
   // @what: test write with badly formatted seller name
   @Test

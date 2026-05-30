@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CommissionRuleCsvParserTest {
   private CommissionRuleCsvParser parser;
-  private List<CommissionRule> commissionRuleList = new ArrayList<>();
+  private List<CommissionRule> commissionRuleList;
   private CommissionPolicy commissionPolicy;
   private CommissionPolicy parserCommissionPolicy;
 
@@ -19,6 +19,7 @@ public class CommissionRuleCsvParserTest {
   public void setUp() {
     CommissionRule ruleOne = new CommissionRule(0.00, 0.05);
     CommissionRule ruleTwo = new CommissionRule(10000.00, 0.08);
+    this.commissionRuleList = new ArrayList<>();
     commissionRuleList.add(ruleOne);
     commissionRuleList.add(ruleTwo);
     commissionPolicy = new CommissionPolicy(commissionRuleList);
@@ -43,5 +44,13 @@ public class CommissionRuleCsvParserTest {
     assertEquals(commissionPolicy.getRules().get(1).getPercentage(),
         parserCommissionPolicy.getRules().get(1).getPercentage(),
         "percentage of higher range should be the same.");
+  }
+
+  // @what: test invalid value in CSV
+  @Test
+  public void testReadRulesInvalid() throws Exception {
+    assertThrows(IllegalArgumentException.class, 
+        () -> this.parser.readRules("src/test/resources/data/regras_comissao_invalid.csv"),
+        "invalid values should not be accepted.");
   }
 }
