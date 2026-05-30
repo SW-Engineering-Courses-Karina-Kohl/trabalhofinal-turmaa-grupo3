@@ -23,10 +23,10 @@ public class CommissionProcessingTest {
   private Sale saleTwoSellerOne = new Sale(67, "V02", 800.00);
   private Sale saleOneSellerTwo = new Sale(37, "V03", 8800.00);
   private Sale saleTwoSellerTwo = new Sale(37, "V04", 200.00);
-  List<CommissionProcessing.Result> results = new ArrayList<>();
-  List<CommissionProcessing.Result> expectedResults = new ArrayList<>();
-  CommissionProcessing.Result lineOne = new CommissionProcessing.Result(67, "João", 1400.00, 0.00);
-  CommissionProcessing.Result lineTwo = new CommissionProcessing.Result(37, "Ismael", 9000.00, 900.00);
+  private List<CommissionProcessing.Result> results = new ArrayList<>();
+  private List<CommissionProcessing.Result> expectedResults = new ArrayList<>();
+  private CommissionProcessing.Result lineOne = new CommissionProcessing.Result(67, "João", 1400.00, 0.00);
+  private CommissionProcessing.Result lineTwo = new CommissionProcessing.Result(37, "Ismael", 9000.00, 900.00);
  
   // @what: set up mocks for testing
   @BeforeEach
