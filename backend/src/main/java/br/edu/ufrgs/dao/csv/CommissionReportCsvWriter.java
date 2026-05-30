@@ -14,12 +14,8 @@ public class CommissionReportCsvWriter {
   // @return: void
   public void write(List<CommissionProcessing.Result> results, String filePath) throws IOException {
     File outputFile = new File(filePath);
-    // check if file exists
-    // if not, create one
-    if (outputFile.exists()) {
-      outputFile.delete();
-      outputFile.createNewFile();
-    }
+    outputFile.delete();
+    outputFile.createNewFile();
 
     // write-to-file logic 
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {

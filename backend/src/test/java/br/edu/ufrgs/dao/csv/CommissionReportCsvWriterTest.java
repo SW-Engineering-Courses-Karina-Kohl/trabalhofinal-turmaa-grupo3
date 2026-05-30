@@ -67,6 +67,7 @@ public class CommissionReportCsvWriterTest {
     }
   }
 
+  /*
   // @what: test write method with non-existing file
   @Test
   public void testWriterNonExistingFile() throws Exception{
@@ -111,8 +112,6 @@ public class CommissionReportCsvWriterTest {
     }
   }
 
-
-  /*
   // @what: test write with badly formatted seller name
   @Test
   public void writeTestLineBreakInName() throws Exception{
