@@ -3,7 +3,7 @@ module Api
     class CommissionReportsController < BaseController
       before_action :set_report, only: %i[show sellers]
 
-      # GET /api/v1/commissions/batches
+      # GET /api/v1/commissions/
       def index
         scope  = SellerCommissionReport.order(created_at: :desc)
         result = paginate(scope)
@@ -17,12 +17,12 @@ module Api
         }
       end
 
-      # GET /api/v1/commissions/batches/:id
+      # GET /api/v1/commissions/:id
       def show
         render json: serialize_report(@report, detailed: true)
       end
 
-      # GET /api/v1/commissions/batches/:id/sellers
+      # GET /api/v1/commissions/:id/sellers
       def sellers
         scope = @report.seller_commission_report_items
 
@@ -39,16 +39,30 @@ module Api
         }
       end
 
-      # GET /api/v1/commissions/batches/:id/export
+      # POST /api/v1/commissions/:id/export
       def export
         report = SellerCommissionReport.find(params[:id])
-        # TODO: generate real PDF — returning JSON manifest for now
-        render json: {
-          exported_at: Time.current,
-          report_id:   report.id,
-          filename:    report.filename,
-          message:     "PDF export not yet implemented — wire your PDF gem here."
-        }
+        type = params[:type]
+
+        if type != 'csv' && type != 'pdf'
+          render json: {
+            message:     "Type not supported"
+          }, status: :unprocessable_entity
+        else
+          hash = Digest::MD5.hexdigest(report.filename)[0..12]
+          filename = "#{report.filename}#{hash}.#{type}"
+
+          export = Export.create!(
+            filename: filename,
+            seller_commission_report: report,
+            status: "created",
+            type: type
+          )
+
+          ProcessExportJob.perform_later(export)
+
+          render json: serialize_export(export), status: :created
+        end
       end
 
       private
@@ -57,16 +71,26 @@ module Api
         @report = SellerCommissionReport.find(params[:id])
       end
 
+      def serialize_export(export)
+        {
+          id:                       export.id,
+          comission_report_id:      export.seller_commission_report_id,
+          filename:                 export.filename,
+          url:                      export.url,
+          type:                     export.type,
+          status:                   export.status,
+          created_at:               export.created_at
+        }
+      end
+
       def serialize_report(report, detailed: false)
         base = {
           id:              report.id,
           filename:        report.filename,
-          batch_number:    "##{report.id}",
           status:          report.status,
           commission_pool: report.commission_pool,
           seller_count:    report.seller_count,
           average_payout:  report.average_payout,
-          validation_passed: report.processed?,
           created_at:      report.created_at,
           updated_at:      report.updated_at
         }
