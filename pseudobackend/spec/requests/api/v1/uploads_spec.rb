@@ -6,7 +6,7 @@ RSpec.describe 'Uploads API', type: :request do
     post 'Upload Sales Report (.csv)' do
       tags 'Sales Report'
 
-      consumes %w[text/csv application/csv text/plain]
+      consumes 'application/csv'
       produces 'application/json'
 
       parameter name: :file, in: :body, type: :string, required: true

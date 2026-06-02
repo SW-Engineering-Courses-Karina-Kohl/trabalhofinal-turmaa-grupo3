@@ -1,7 +1,7 @@
 require "swagger_helper"
 
 RSpec.describe 'Commission Reports API', type: :request do
-  path '/api/v1/commisions/batches' do
+  path '/api/v1/commisions' do
     get 'Get List of all reports' do
       tags 'Commission Reports'
       produces 'application/json'
@@ -16,7 +16,6 @@ RSpec.describe 'Commission Reports API', type: :request do
                 properties: {
                   id:              { type: :integer },
                   filename:        { type: :string },
-                  batch_number:    { type: :string },
                   status:          { 
                     type: :string , 
                     enum: ["received", "processing", "processed", "failed"]
@@ -24,7 +23,6 @@ RSpec.describe 'Commission Reports API', type: :request do
                   commission_pool: { type: :number},
                   seller_count:    { type: :integer },
                   average_payout:  { type: :number},
-                  validation_passed: { type: :string },
                   created_at:      { type: :string, format: 'date-time' },
                   updated_at:      { type: :string, format: 'date-time' }
                 }
@@ -41,7 +39,7 @@ RSpec.describe 'Commission Reports API', type: :request do
     end
   end
 
-  path '/api/v1/commisions/batches/{id}' do
+  path '/api/v1/commisions/{id}' do
     get 'Get a report' do
       tags 'Commission Reports'
       produces 'application/json'
@@ -55,7 +53,6 @@ RSpec.describe 'Commission Reports API', type: :request do
           properties: {
             id:              { type: :integer },
             filename:        { type: :string },
-            batch_number:    { type: :string },
             status:          { 
               type: :string, 
               enum: ["received", "processing", "processed", "failed"]
@@ -63,7 +60,6 @@ RSpec.describe 'Commission Reports API', type: :request do
             commission_pool: { type: :number},
             seller_count:    { type: :integer },
             average_payout:  { type: :number},
-            validation_passed: { type: :string },
             created_at:      { type: :string, format: 'date-time' },
             updated_at:      { type: :string, format: 'date-time' }
           },
@@ -74,7 +70,7 @@ RSpec.describe 'Commission Reports API', type: :request do
     end
   end
 
-  path '/api/v1/commisions/batches/{id}/sellers' do
+  path '/api/v1/commisions/{id}/sellers' do
     get 'Get the sellers of a report' do
       tags 'Commission Sellers'
       produces 'application/json'
@@ -111,4 +107,31 @@ RSpec.describe 'Commission Reports API', type: :request do
       end
     end
   end
+
+
+  path '/api/v1/commisions/{id}/export' do
+    get 'Generate commissions report' do
+      tags 'Commission Sellers'
+      produces 'application/json'
+
+      parameter name: :id, in: :path, type: :integer, required: true
+      parameter name: :type, in: :body, type: :string, required: true
+ 
+      response '200', 'report_sellers' do
+        let(:id) { 1 }
+        let(:id) { ["csv", "pdf"].sample }
+
+        schema type: :object,
+          properties: {
+            id:     { type: :integer },
+            type:    { type: :string },
+            url:    { type: :string }
+          },
+          required: ['url', 'type', 'id']
+
+        run_test!
+      end
+    end
+  end
+
 end

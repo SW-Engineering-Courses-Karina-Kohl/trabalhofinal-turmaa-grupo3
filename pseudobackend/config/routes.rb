@@ -15,12 +15,10 @@ Rails.application.routes.draw do
       resources :uploads, only: :create
 
       # Commission batches
-      namespace :commissions do
-        resources :batches, controller: "commission_reports", only: %i[index show] do
-          member do
-            get :sellers
-            get :export
-          end
+      resources :commissions, controller: "commission_reports", only: %i[index show] do
+        member do
+          get :sellers
+          get :export
         end
       end
     end
