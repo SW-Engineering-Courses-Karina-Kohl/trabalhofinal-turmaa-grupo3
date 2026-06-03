@@ -11,7 +11,7 @@ module Api
         render json: {
           data:        result[:data].map { |r| serialize_report(r) },
           page:        result[:page],
-          page_size:   result[:page_size],
+          size:        result[:size],
           total:       result[:total],
           total_pages: result[:total_pages]
         }
@@ -33,7 +33,7 @@ module Api
         render json: {
           data:        result[:data].map { |i| serialize_item(i) },
           page:        result[:page],
-          page_size:   result[:page_size],
+          size:        result[:size],
           total:       result[:total],
           total_pages: result[:total_pages]
         }
@@ -42,7 +42,7 @@ module Api
       # POST /api/v1/commissions/:id/export
       def export
         report = SellerCommissionReport.find(params[:id])
-        type = params[:type]
+        type = params[:doc_type]
 
         if type != 'csv' && type != 'pdf'
           render json: {
@@ -54,7 +54,7 @@ module Api
 
           export = Export.create!(
             filename: filename,
-            seller_commission_report: report,
+            comission_report_id: report.id,
             status: "created",
             type: type
           )

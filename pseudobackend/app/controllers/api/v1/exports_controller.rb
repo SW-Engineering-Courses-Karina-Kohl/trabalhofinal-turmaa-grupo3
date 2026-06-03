@@ -11,7 +11,7 @@ module Api
         render json: {
           data:        result[:data].map { |e| serialize_export(e) },
           page:        result[:page],
-          page_size:   result[:page_size],
+          size:        result[:size],
           total:       result[:total],
           total_pages: result[:total_pages]
         }

@@ -17,15 +17,15 @@ module Api
 
       def paginate(scope)
         page      = (params[:page]     || 1).to_i
-        page_size = (params[:pageSize] || 10).to_i.clamp(1, 100)
+        size      = (params[:size] || 10).to_i.clamp(1, 100)
         total     = scope.count
 
         {
-          data:        scope.offset((page - 1) * page_size).limit(page_size),
+          data:        scope.offset((page - 1) * size).limit(size),
           page:        page,
-          page_size:   page_size,
+          size:        size,
           total:       total,
-          total_pages: (total.to_f / page_size).ceil
+          total_pages: (total.to_f / size).ceil
         }
       end
     end
