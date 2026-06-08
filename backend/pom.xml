@@ -15,31 +15,18 @@
 	<properties>
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
-		<spring-boot.version>4.0.6</spring-boot.version>
 		<maven.build.cache.enabled>true</maven.build.cache.enabled>
-  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  		<jakarta.ee.version>10.0.0</jakarta.ee.version>
 	</properties>
 
 
 	<dependencies>
-		<!-- Web starter -->
+		<!-- Jakarta EE 10 (Servlet + WebSocket) -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		
-		<!-- Spring Boot 4 WAR deployment -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat-runtime</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Jakarta Servlet -->
-		<dependency>
-			<groupId>jakarta.servlet</groupId>
-			<artifactId>jakarta.servlet-api</artifactId>
-			<version>6.0.0</version>
+			<groupId>jakarta.platform</groupId>
+			<artifactId>jakarta.jakartaee-api</artifactId>
+			<version>${jakarta.ee.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -55,110 +42,19 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${spring-boot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
     
 	<profiles>
-		<!-- TEST PROFILE -->
-		<profile>
-		    	<id>test</id>
-			
-			<dependencies>
-				<dependency>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-devtools</artifactId>
-					<optional>true</optional>
-				</dependency>
-				<dependency>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-starter-test</artifactId>
-					<scope>test</scope>
-				</dependency>
-			</dependencies>
-			
-			<build>
-				<plugins>
-					<!-- Spring Boot plugin -->
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<version>${spring-boot.version}</version>
-						<configuration>
-							<mainClass>br.edu.ufrgs.Application</mainClass>
-							<packaging>war</packaging>
-						</configuration>
-					</plugin>
-
-					<!-- WAR compiler -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<version>3.13.0</version>
-						<configuration>
-							<compilerArgs>
-								<arg>-parameters</arg>
-							</compilerArgs>
-							<release>17</release>
-							<incremental>true</incremental>
-						</configuration>
-					</plugin>
-
-					<!-- War plugin optimization -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-war-plugin</artifactId>
-						<version>3.4.0</version>
-						<configuration>
-							<failOnMissingWebXml>false</failOnMissingWebXml>
-							<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-		
 		<!-- DEVELOPMENT PROFILE -->
 		<profile>
 		    	<id>dev</id>
 		    	<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
-			
-			<dependencies>
-				<dependency>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-devtools</artifactId>
-					<optional>true</optional>
-				</dependency>
-
-				<!-- Hot reload (DevTools) -->
-				<dependency>
-				    <groupId>org.springframework.boot</groupId>
-				    <artifactId>spring-boot-devtools</artifactId>
-				    <optional>true</optional>
-				</dependency>
-			</dependencies>
-			
+						
 			<build>
 				<plugins>
-					<!-- Spring Boot plugin -->
-					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<version>${spring-boot.version}</version>
-						<configuration>
-							<mainClass>br.edu.ufrgs.Application</mainClass>
-							<packaging>war</packaging>
-						</configuration>
-					</plugin>
-
 					<!-- WAR compiler -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -174,35 +70,35 @@
 					</plugin>
 
 					<!-- plugin do maven surefire (obrigatório para rodar junit 5 no maven) -->
-    			<plugin>
-      			<groupId>org.apache.maven.plugins</groupId>
-      			<artifactId>maven-surefire-plugin</artifactId>
-      			<version>3.2.5</version>
-    			</plugin>
+		    			<plugin>
+			      			<groupId>org.apache.maven.plugins</groupId>
+			      			<artifactId>maven-surefire-plugin</artifactId>
+			      			<version>3.2.5</version>
+		    			</plugin>
 
-    			<!-- plugin do jacoco -->
-    			<plugin>
-      			<groupId>org.jacoco</groupId>
-      			<artifactId>jacoco-maven-plugin</artifactId>
-      			<version>0.8.11</version>
-      			<executions>
-        			<!-- inicializa o agente do jacoco antes dos testes rodarem -->
-        			<execution>
-          			<id>prepare-agent</id>
-          			<goals>
-            			<goal>prepare-agent</goal>
-          			</goals>
-        			</execution>
-        			<!-- gera o relatório HTML após a execução dos testes -->
-        			<execution>
-          			<id>report</id>
-          			<phase>test</phase>
-          			<goals>
-            			<goal>report</goal>
-          			</goals>
-        			</execution>
-      			</executions>
-    			</plugin>
+		    			<!-- plugin do jacoco -->
+		    			<plugin>
+			      			<groupId>org.jacoco</groupId>
+			      			<artifactId>jacoco-maven-plugin</artifactId>
+			      			<version>0.8.11</version>
+			      			<executions>
+							<!-- inicializa o agente do jacoco antes dos testes rodarem -->
+							<execution>
+					  			<id>prepare-agent</id>
+					  			<goals>
+					    				<goal>prepare-agent</goal>
+					  			</goals>
+							</execution>
+							<!-- gera o relatório HTML após a execução dos testes -->
+							<execution>
+					  			<id>report</id>
+					  			<phase>test</phase>
+					  			<goals>
+					    				<goal>report</goal>
+					  			</goals>
+							</execution>
+			      			</executions>
+		    			</plugin>
 
 					<!-- War plugin optimization -->
 					<plugin>
@@ -223,13 +119,18 @@
 			<id>prod</id>
 			<build>
 				<plugins>
+				
+					<!-- WAR compiler -->
 					<plugin>
-						<groupId>org.springframework.boot</groupId>
-						<artifactId>spring-boot-maven-plugin</artifactId>
-						<version>${spring-boot.version}</version>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.13.0</version>
 						<configuration>
-							<mainClass>br.edu.ufrgs.Application</mainClass>
-							<packaging>war</packaging>
+							<compilerArgs>
+								<arg>-parameters</arg>
+							</compilerArgs>
+							<release>17</release>
+							<incremental>true</incremental>
 						</configuration>
 					</plugin>
 				</plugins>
