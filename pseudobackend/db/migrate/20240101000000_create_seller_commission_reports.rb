@@ -24,8 +24,8 @@ class CreateSellerCommissionReports < ActiveRecord::Migration[8.0]
     create_table :exports do |t|
       t.references :seller_commission_report, null: false, foreign_key: true, index: true
       t.string  :filename, null: false
-      t.string  :type,     null: false
-      t.string  :url,      null: false
+      t.string  :doc_type, null: false
+      t.string  :url,     default: "" 
       t.string  :status,   null: false, default: "created"
       t.timestamps
     end

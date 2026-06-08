@@ -19,7 +19,7 @@ module Api
 
       # GET /api/v1/commissions/:id
       def show
-        render json: serialize_report(@report, detailed: true)
+        render json: serialize_report(@report)
       end
 
       # GET /api/v1/commissions/:id/sellers
@@ -42,27 +42,36 @@ module Api
       # POST /api/v1/commissions/:id/export
       def export
         report = SellerCommissionReport.find(params[:id])
-        type = params[:doc_type]
+        doc_type = params[:doc_type]
 
-        if type != 'csv' && type != 'pdf'
+        if doc_type != 'csv' && doc_type != 'pdf'
           render json: {
             message:     "Type not supported"
           }, status: :unprocessable_entity
         else
           hash = Digest::MD5.hexdigest(report.filename)[0..12]
-          filename = "#{report.filename}#{hash}.#{type}"
+          filename = "#{report.filename}#{hash}.#{doc_type}"
 
           export = Export.create!(
             filename: filename,
-            comission_report_id: report.id,
+            seller_commission_report: report,
             status: "created",
-            type: type
+            doc_type: doc_type
           )
 
           ProcessExportJob.perform_later(export)
 
           render json: serialize_export(export), status: :created
         end
+      end
+
+      # DELETE /api/v1/commissions/:id
+      def destroy
+        report = SellerCommissionReport.find(params[:id])
+
+        report.destroy!
+
+        render json: { id: report.id }, status: :ok
       end
 
       private
@@ -77,13 +86,13 @@ module Api
           comission_report_id:      export.seller_commission_report_id,
           filename:                 export.filename,
           url:                      export.url,
-          type:                     export.type,
+          type:                     export.doc_type,
           status:                   export.status,
           created_at:               export.created_at
         }
       end
 
-      def serialize_report(report, detailed: false)
+      def serialize_report(report)
         base = {
           id:              report.id,
           filename:        report.filename,

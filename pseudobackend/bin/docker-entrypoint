@@ -5,4 +5,4 @@ if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
-exec ",/bin/thrust ./bin/rails server -b 0.0.0.0"
+exec ",/bin/thrust ./bin/dev"

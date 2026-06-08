@@ -27,12 +27,15 @@ module Api
       private
 
       def serialize_export(export)
-        {
+        file = export.file
+        filename = file.filename.to_s || ""
+        url = rails_blob_url(file, disposition: "attachment") || ""
+        return {
           id:                       export.id,
           comission_report_id:      export.seller_commission_report_id,
-          filename:                 export.filename,
-          url:                      export.url,
-          type:                     export.type,
+          filename:                 filename,
+          url:                      url,
+          type:                     export.doc_type,
           status:                   export.status,
           created_at:               export.created_at
         }

@@ -71,7 +71,27 @@ RSpec.describe 'Commission Reports API', type: :request do
         run_test!
       end
     end
+
+    delete 'Delete report' do
+      tags 'Delete a specific report'
+
+      produces 'application/json'
+
+      parameter name: :id, in: :path, type: :integer, required: true
+
+      response '200', 'sales csv received' do
+        schema type: :object,
+          properties: {
+            id: { type: :integer }
+          },
+          required: ['id']
+
+        run_test!
+      end
+    end
   end
+    
+ 
 
   path '/api/v1/commissions/{id}/sellers' do
     get 'Get the sellers of a report' do

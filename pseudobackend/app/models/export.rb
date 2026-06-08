@@ -3,9 +3,11 @@ class Export < ApplicationRecord
   
   belongs_to :seller_commission_report
 
+  has_one_attached :file
+
   validates :filename, presence: true
   validates :status,   presence: true
-  validates :type,     presence: true
+  validates :doc_type,     presence: true
 
   aasm column: :status do
     state :created, initial: true

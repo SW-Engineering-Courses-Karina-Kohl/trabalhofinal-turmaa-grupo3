@@ -2,6 +2,7 @@ class SellerCommissionReport < ApplicationRecord
   include AASM
 
   has_many :seller_commission_report_items, dependent: :destroy
+  has_many :exports, dependent: :destroy
 
   validates :filename, presence: true
   validates :status,   presence: true

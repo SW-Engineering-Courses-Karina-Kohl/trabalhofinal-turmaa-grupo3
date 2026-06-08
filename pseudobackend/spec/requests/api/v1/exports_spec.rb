@@ -4,7 +4,7 @@ require "swagger_helper"
 RSpec.describe 'Export API', type: :request do
 
   path '/api/v1/exports' do
-    post 'Get all exports (.csv or .pdf)' do
+    get 'Get all exports (.csv or .pdf)' do
       tags 'Exports type .csv and .pdf'
 
       produces 'application/json'
@@ -45,7 +45,7 @@ RSpec.describe 'Export API', type: :request do
   end
 
   path '/api/v1/exports/{id}' do
-    post 'Get all exports (.csv or .pdf)' do
+    get 'Get all exports (.csv or .pdf)' do
       tags 'Exports type .csv and .pdf of a comission report'
 
       produces 'application/json'

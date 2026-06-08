@@ -175,6 +175,42 @@
             }
           }
         }
+      },
+      "delete": {
+        "summary": "Delete report",
+        "tags": [
+          "Delete a specific report"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "sales csv received",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/v1/commissions/{id}/sellers": {
@@ -329,7 +365,7 @@
       }
     },
     "/api/v1/exports": {
-      "post": {
+      "get": {
         "summary": "Get all exports (.csv or .pdf)",
         "tags": [
           "Exports type .csv and .pdf"
@@ -414,7 +450,7 @@
       }
     },
     "/api/v1/exports/{id}": {
-      "post": {
+      "get": {
         "summary": "Get all exports (.csv or .pdf)",
         "tags": [
           "Exports type .csv and .pdf of a comission report"

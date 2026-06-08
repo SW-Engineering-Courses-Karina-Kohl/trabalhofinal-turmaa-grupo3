@@ -15,7 +15,7 @@ Rails.application.routes.draw do
       resources :uploads, only: :create
 
       # Commission batches
-      resources :commissions, controller: "commission_reports", only: %i[index show] do
+      resources :commissions, controller: "commission_reports", only: %i[index show destroy] do
         member do
           get :sellers
           post :export

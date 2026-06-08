@@ -6,7 +6,7 @@ class Avo::Resources::Export < Avo::BaseResource
   def fields
     field :id,              as: :id
     field :filename,        as: :text,   required: true
-    field :type,            as: :text,   required: true
+    field :doc_type,            as: :text,   required: true
     field :url,             as: :text,   required: true
     field :status,          as: :select,
           options: Export.aasm.states.map { |s| [s.name.to_s.humanize, s.name.to_s] },
