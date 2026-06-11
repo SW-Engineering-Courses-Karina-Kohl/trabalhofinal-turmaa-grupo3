@@ -23,7 +23,7 @@ public class CommissionReportCsvWriter {
       writer.newLine();
 
       for (CommissionProcessing.Result result : results) {
-        writer.write(String.format("%d,%s,%.2f,%.2f", result.sellerId(),
+        writer.write(String.format(java.util.Locale.US, "%d,%s,%.2f,%.2f", result.sellerId(),
               result.name(), result.totalSales(), result.commission()));
         writer.newLine();
       }
