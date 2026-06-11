@@ -14,9 +14,11 @@ module Api
         end
 
         filename = file.original_filename
-        report   = SellerCommissionReport.create!(filename:)
+        report   = SellerCommissionReport.create!(filename: filename)
 
-        ProcessSellerCommissionReportJob.perform_later(report)
+        Thread.new do
+          ProcessSellerCommissionReportJob.perform_now(report)
+        end
 
         render json: serialize_report(report), status: :created
       end

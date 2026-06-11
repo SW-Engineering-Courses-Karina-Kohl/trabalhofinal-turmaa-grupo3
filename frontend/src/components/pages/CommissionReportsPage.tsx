@@ -1,39 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { Archive, ChevronRight } from "lucide-react";
-import type { CommissionBatch } from "@/types";
 
-// Mock — replace with commissionsApi.listBatches() in useEffect
-const MOCK_BATCHES: CommissionBatch[] = [
-  {
-    id: "batch-8821",
-    fileName: "Q3_Final_Sales_Report.csv",
-    batchNumber: "#8821",
-    totalCommissionPool: 412850.42,
-    activeSellers: 124,
-    averagePayout: 3329.44,
-    validationPassed: true,
-    sellers: [],
-    totalSellersCount: 124,
-  },
-  {
-    id: "batch-8820",
-    fileName: "Q2_Final_Sales_Batch.csv",
-    batchNumber: "#8820",
-    totalCommissionPool: 388100.0,
-    activeSellers: 115,
-    averagePayout: 3375.65,
-    validationPassed: true,
-    sellers: [],
-    totalSellersCount: 115,
-  },
-];
+import Pagination from "../ui/Pagination";
+import { useCommissionsApi, COMISSIONS_PAGE_SIZE } from "@/api";
+import { CommissionReport } from "@/models";
+import { Currency } from "../ui/UIHelpers";
 
-function fmt(n: number) {
-  return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-}
-
-export default function ResultsArchivePage() {
+export default function CommissionReportsPage() {
   const navigate = useNavigate();
+  const APIController = useCommissionsApi();
+  const pageControls = APIController.getAll.paginationControls;
+  const data = APIController.getAll.items;
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -43,10 +20,10 @@ export default function ResultsArchivePage() {
       </div>
 
       <div className="space-y-3">
-        {MOCK_BATCHES.map((batch) => (
+        {data?.map((commissionReport : CommissionReport) => (
           <button
-            key={batch.id}
-            onClick={() => navigate(`/archive/${batch.id}`)}
+            key={commissionReport.id}
+            onClick={() => navigate(`/sellers/${commissionReport.id}`)}
             className="card w-full p-5 flex items-center gap-6 text-left hover:shadow-md hover:-translate-y-0.5 transition-all group"
           >
             <div className="w-11 h-11 rounded-xl bg-brand-50 flex items-center justify-center shrink-0">
@@ -54,14 +31,14 @@ export default function ResultsArchivePage() {
             </div>
 
             <div className="flex-1 min-w-0">
-              <p className="font-semibold text-slate-800 truncate">{batch.fileName}</p>
+              <p className="font-semibold text-slate-800 truncate">{commissionReport.filename}</p>
               <p className="text-sm text-slate-400 mt-0.5">
-                Batch {batch.batchNumber} · {batch.activeSellers} sellers
+                {commissionReport.seller_count} sellers
               </p>
             </div>
 
             <div className="text-right shrink-0">
-              <p className="text-lg font-bold text-brand-700">{fmt(batch.totalCommissionPool)}</p>
+              <p className="text-lg font-bold text-brand-700">{Currency(commissionReport.commission_pool)}</p>
               <p className="text-xs text-slate-400 mt-0.5">Commission Pool</p>
             </div>
 
@@ -72,6 +49,18 @@ export default function ResultsArchivePage() {
           </button>
         ))}
       </div>
-    </div>
+
+      <Pagination
+        page={pageControls.page ?? 1}
+        totalPages={pageControls.totalPages ?? 0}
+        total={pageControls.total ?? 0}
+        pageSize={COMISSIONS_PAGE_SIZE}
+        nextPage={pageControls.nextPage}
+        prevPage={pageControls.prevPage} 
+        canNext={pageControls.canNext} 
+        canPrev={pageControls.canPrev} 
+        goTo={pageControls.goTo}
+      />
+  </div>
   );
 }

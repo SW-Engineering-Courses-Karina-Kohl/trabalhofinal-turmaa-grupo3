@@ -59,7 +59,9 @@ module Api
             doc_type: doc_type
           )
 
-          ProcessExportJob.perform_later(export)
+          Thread.new do
+            ProcessExportJob.perform_now(export)
+          end
 
           render json: serialize_export(export), status: :created
         end

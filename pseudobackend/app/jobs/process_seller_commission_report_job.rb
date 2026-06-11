@@ -1,5 +1,5 @@
 class ProcessSellerCommissionReportJob < ApplicationJob
-  queue_as :default
+  queue_as :high_priority
 
   REGIONS = %w[North\ America EMEA APAC LATAM].freeze
 

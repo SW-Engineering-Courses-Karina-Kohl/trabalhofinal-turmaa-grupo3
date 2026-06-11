@@ -1,29 +1,19 @@
-import type { SellerStatus, UploadStatus } from "@/types";
+import type { UploadStatus } from "@/types";
 
-type BadgeStatus = SellerStatus | UploadStatus;
-
-const MAP: Record<BadgeStatus, string> = {
-  APPROVED:  "status-badge--approved",
-  REVIEWING: "status-badge--reviewing",
-  PENDING:   "status-badge--pending",
-  REJECTED:  "status-badge--rejected",
+const MAP: Record<UploadStatus, string> = {
   Completed: "status-badge--approved",
   Processing:"status-badge--reviewing",
   Failed:    "status-badge--rejected",
 };
 
-const DOT: Record<BadgeStatus, string> = {
-  APPROVED:  "bg-brand-500",
-  REVIEWING: "bg-amber-500",
-  PENDING:   "bg-slate-400",
-  REJECTED:  "bg-red-500",
+const DOT: Record<UploadStatus, string> = {
   Completed: "bg-brand-500",
   Processing:"bg-amber-500",
   Failed:    "bg-red-500",
 };
 
 interface Props {
-  status: BadgeStatus;
+  status: UploadStatus;
   withDot?: boolean;
 }
 

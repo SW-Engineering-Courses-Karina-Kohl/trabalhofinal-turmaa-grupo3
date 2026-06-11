@@ -16,7 +16,7 @@ class Export < ApplicationRecord
     state :failed
 
     event :start_processing do
-      transitions from: :received, to: :processing
+      transitions from: :created, to: :processing
     end
 
     event :mark_processed do

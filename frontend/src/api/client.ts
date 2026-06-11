@@ -4,11 +4,9 @@
  * Base HTTP client. The baseURL is read from the VITE_API_BASE_URL env var so
  * it works both locally (via Vite proxy or direct) and inside Docker Compose.
  *
- * TODO (implementor): add auth token injection, refresh logic, and error
- * interceptors as needed when the backend is ready.
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080/api";
+const BASE_URL = "http://api.localhost";
 
 export class ApiError extends Error {
   constructor(

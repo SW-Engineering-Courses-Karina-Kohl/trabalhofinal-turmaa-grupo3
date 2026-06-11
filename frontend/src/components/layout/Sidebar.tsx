@@ -1,14 +1,9 @@
 import { NavLink } from "react-router-dom";
-import { BarChart2, Upload, Archive, Settings, HelpCircle } from "lucide-react";
+import { BarChart2, Upload, Archive } from "lucide-react";
 
 const NAV = [
-  { to: "/upload",  label: "Upload/Manage",   icon: Upload },
-  { to: "/archive", label: "Results Archive",  icon: Archive },
-];
-
-const BOTTOM_NAV = [
-  { to: "/settings", label: "Settings", icon: Settings },
-  { to: "/support",  label: "Support",  icon: HelpCircle },
+  { to: "/upload",  label: "Enviar Relatório de Vendas",   icon: Upload },
+  { to: "/commissions", label: "Relatórios de Comissões",  icon: Archive },
 ];
 
 export default function Sidebar() {
@@ -22,7 +17,7 @@ export default function Sidebar() {
         <span className="font-bold text-slate-800 leading-tight text-sm">
           SalesOps
           <br />
-          <span className="font-normal text-slate-400">Admin</span>
+          <span className="font-normal text-slate-400">SalesOps</span>
         </span>
       </div>
 
@@ -53,20 +48,6 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
-      {/* Divider + bottom nav */}
-      <div className="border-t border-slate-100 px-3 py-3 space-y-0.5">
-        {BOTTOM_NAV.map(({ to, label, icon: Icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors"
-          >
-            <Icon size={16} strokeWidth={2} className="text-slate-400" />
-            {label}
-          </NavLink>
-        ))}
-      </div>
     </aside>
   );
 }
