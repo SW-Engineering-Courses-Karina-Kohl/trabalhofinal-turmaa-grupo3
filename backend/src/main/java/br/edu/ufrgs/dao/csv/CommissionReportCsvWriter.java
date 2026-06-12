@@ -1,51 +1,52 @@
 package br.edu.ufrgs.dao.csv;
 
-import br.edu.ufrgs.model.CommissionReport;
+import br.edu.ufrgs.dao.export.ExportFileContract;
 import br.edu.ufrgs.model.Seller;
-import br.edu.ufrgs.service.SalesReportProcessing;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.FileWriter;
-import java.util.List;
-import java.io.File;
 
-public class CommissionReportCsvWriter {
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+public class CommissionReportCsvWriter implements ExportFileContract {
   // @what: generate and write data to output CSV
   // @param: List<Result> results -> list of lines to be written 
   // @param: String filePath -> output location (with file name)
   // @return: void
-
-    private CommissionReport commissionReport;
-    private List<Seller> sellers;
-
-    public CommissionReportCsvWriter(CommissionReport commissionReport) {
-        this.commissionReport = commissionReport;
-        this.sellers = commissionReport.getSellers();
+    public void write(List<Seller> sellers, Path path) throws IOException {
+        if(Files.exists(path)) Files.delete(path);
+        Files.createFile(path);
+        this.writeToFile(sellers, path.toFile());
     }
 
-    public void write(String filePath) throws IOException {
+
+    public void write(List<Seller> sellers, String filePath) throws IOException {
         File outputFile = new File(filePath);
         outputFile.delete();
         outputFile.createNewFile();
 
-        // write-to-file logic
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-          writer.write("seller_id,name,total_sales,commission");
-          writer.newLine();
+        this.writeToFile(sellers, outputFile);
+      }
 
-          for(Seller seller : this.sellers) {
-              String line = String.format(
-                      java.util.Locale.US,
-                      "%d,%s,%.2f,%.2f",
-                      seller.getSellerId(),
-                      seller.getName(),
-                      seller.getTotalSales(),
-                      seller.getCommission()
-              );
-              writer.write(line);
+      private void writeToFile(List<Seller> sellers, File file) throws IOException {
+          // write-to-file logic
+          try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+              writer.write("seller_id,name,total_sales,commission");
               writer.newLine();
+
+              for(Seller seller : sellers) {
+                  String line = String.format(
+                          java.util.Locale.US,
+                          "%d,%s,%.2f,%.2f",
+                          seller.getSellerId(),
+                          seller.getName(),
+                          seller.getTotalSales(),
+                          seller.getCommission()
+                  );
+                  writer.write(line);
+                  writer.newLine();
+              }
           }
-        }
       }
 
   /*

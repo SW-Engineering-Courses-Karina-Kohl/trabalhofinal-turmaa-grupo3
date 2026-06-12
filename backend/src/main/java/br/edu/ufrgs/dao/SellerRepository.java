@@ -16,6 +16,13 @@ public class SellerRepository {
     @PersistenceContext(unitName = "salesopsPU")
     private EntityManager em;
 
+    public List<Seller> findAll(int id) {
+        // Get page
+        return  em.createQuery(querySelectAll, Seller.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
     public PagedResponse<Seller> findAllPaginated(int id, int page, int size) {
         if(size <= 0) size = 10;
 

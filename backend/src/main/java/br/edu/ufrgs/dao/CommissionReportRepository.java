@@ -4,6 +4,7 @@ import br.edu.ufrgs.dto.PagedResponse;
 import br.edu.ufrgs.model.CommissionReport;
 import jakarta.ejb.Stateless;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 public class CommissionReportRepository {
     private static final String queryCount = "SELECT COUNT(r) FROM CommissionReport r";
     private static final String querySelectAll = "SELECT r FROM CommissionReport r ORDER BY r.id";
+    private static final String querySelectOne = "SELECT r FROM CommissionReport r WHERE r.id = :id";
 
     @PersistenceContext(unitName = "salesopsPU")
     private EntityManager em;
@@ -39,6 +41,16 @@ public class CommissionReportRepository {
         	.totalPages(totalPages)
         	.last(page >= totalPages - 1)
         	.build();
+    }
+
+    public CommissionReport findOne(int id) {
+        try {
+            return em.createQuery(querySelectOne, CommissionReport.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public CommissionReport save(CommissionReport report) {

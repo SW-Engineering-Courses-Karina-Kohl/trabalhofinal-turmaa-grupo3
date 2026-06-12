@@ -24,7 +24,7 @@ public class CommissionReportCsvWriterTest {
     this.results = new ArrayList<>();
     this.commissionReport = new CommissionReport();
     commissionReport.setSellers(this.results);
-    this.writer = new CommissionReportCsvWriter(commissionReport);
+    this.writer = new CommissionReportCsvWriter();
   }
 
   // @what: test write method
@@ -36,7 +36,7 @@ public class CommissionReportCsvWriterTest {
     results.add(seller1);
     results.add(seller2);
     String filePath = "src/test/resources/data/comissoes_consolidadas.csv";
-    writer.write(filePath);
+    writer.write(results, filePath);
     File outputFile = new File(filePath);
 
     assertTrue(outputFile.exists(), "output file should exist.");
