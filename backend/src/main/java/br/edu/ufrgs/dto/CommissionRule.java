@@ -1,4 +1,4 @@
-package br.edu.ufrgs.model;
+package br.edu.ufrgs.dto;
 
 // @what: class to represent a single commission rule
 public class CommissionRule {

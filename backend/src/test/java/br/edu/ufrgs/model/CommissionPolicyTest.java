@@ -1,5 +1,7 @@
 package br.edu.ufrgs.model;
 
+import br.edu.ufrgs.dto.CommissionPolicy;
+import br.edu.ufrgs.dto.CommissionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;

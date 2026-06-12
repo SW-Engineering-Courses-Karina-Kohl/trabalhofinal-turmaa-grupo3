@@ -1,33 +1,91 @@
 package br.edu.ufrgs.model;
 
+import br.edu.ufrgs.dto.Sale;
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.ArrayList;
 
-// @what: class to represent a seller
+@Entity
+@Table(name = "sellers")
 public class Seller {
-  private String name;
-  private int sellerId;
-  private List<Sale> sales; // all sales made by the seller
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-  public Seller(String name, int sellerId) {
-    this.name = name;
+  @Column(nullable = false)
+  private int sellerId;
+
+  @Column(nullable = false)
+  private String name;
+
+  @Column(nullable = false)
+  private String initials;
+
+  @Column(name = "total_sales", nullable = false)
+  private double totalSales = 0.0f;
+
+  @Column(name = "commission_rate", nullable = false)
+  private float commissionRate = 0.0f;
+
+  @Column(nullable = false)
+  private double commission = 0.0f;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "commission_report_id", nullable = false)
+  private CommissionReport commissionReport;
+
+  @Transient
+  private List<Sale> sales = new ArrayList<>();
+
+  public Seller() {}
+
+  public Seller(int sellerId, String name, String initials, double totalSales, float commissionRate, double commission, CommissionReport commissionReport) {
     this.sellerId = sellerId;
-    this.sales = new ArrayList<>();
+    this.name = name;
+    this.commissionReport = commissionReport;
+    this.initials = initials;
+    this.totalSales = totalSales;
+    this.commissionRate = commissionRate;
+    this.commission = commission;
   }
 
-  public String getName() {
-    return this.name;
+  public int getId() {
+    return id;
   }
 
   public int getSellerId() {
-    return this.sellerId;
+    return sellerId;
+  }
+
+  public String getInitials() {
+    return initials;
+  }
+
+  public double getTotalSales() {
+    return totalSales;
+  }
+
+  public float getCommissionRate() {
+    return commissionRate;
+  }
+
+  public double getCommission() {
+    return commission;
+  }
+
+  public String getName() {
+    return name;
+  }
+  public CommissionReport getCommissionReport() {
+    return commissionReport;
   }
 
   public List<Sale> getSales() {
-    return this.sales;
+    return sales;
   }
 
   public void addSale(Sale sale) {
-     this.sales.add(sale);
+    sales.add(sale);
   }
 }

@@ -1,5 +1,35 @@
-FROM tomcat:11.0-jdk17-temurin
+FROM quay.io/wildfly/wildfly:35.0.1.Final-jdk17
 
-RUN rm -rf /usr/local/tomcat/webapps/*
+# Download PostgreSQL JDBC driver
+RUN curl -L https://jdbc.postgresql.org/download/postgresql-42.7.4.jar -o /tmp/postgresql.jar
+
+# Create module structure
+RUN mkdir -p /opt/jboss/wildfly/modules/org/postgresql/main
+
+RUN mv /tmp/postgresql.jar /opt/jboss/wildfly/modules/org/postgresql/main/postgresql-42.7.4.jar
+
+# Create module.xml
+RUN echo '<?xml version="1.0" encoding="UTF-8"?>\
+<module xmlns="urn:jboss:module:1.3" name="org.postgresql">\
+    <resources>\
+        <resource-root path="postgresql-42.7.4.jar"/>\
+    </resources>\
+    <dependencies>\
+        <module name="javax.api"/>\
+        <module name="javax.transaction.api"/>\
+    </dependencies>\
+</module>' > /opt/jboss/wildfly/modules/org/postgresql/main/module.xml
+
+COPY configure-ds.cli /tmp/configure-ds.cli
+
+RUN /opt/jboss/wildfly/bin/standalone.sh --admin-only & \
+    sleep 10 && \
+    /opt/jboss/wildfly/bin/jboss-cli.sh --connect --file=/tmp/configure-ds.cli && \
+    /opt/jboss/wildfly/bin/jboss-cli.sh --connect --command=":shutdown"
+
+
+# WildFly runs on 8080 by default
 EXPOSE 8080
-CMD ["catalina.sh", "run"]
+
+# Deployment happens via volume mount in docker-compose
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0"]

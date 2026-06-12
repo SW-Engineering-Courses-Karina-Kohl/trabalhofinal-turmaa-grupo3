@@ -1,6 +1,6 @@
-package br.edu.ufrgs.model;
+package br.edu.ufrgs.dto;
 
-import br.edu.ufrgs.model.CommissionRule;
+import br.edu.ufrgs.dto.CommissionRule;
 import java.util.Comparator;
 import java.util.List;
 
@@ -17,5 +17,16 @@ public class CommissionPolicy {
 
   public List<CommissionRule> getRules() {
     return this.rules;
+  }
+
+  public double getCommissionRate(double totalSales) {
+    // check what commission range seller belongs to
+    for (CommissionRule rule : rules) {
+      if (totalSales >= rule.getMinimumGoal()) {
+        return rule.getPercentage();
+      }
+    }
+
+    return 0.0;
   }
 }
