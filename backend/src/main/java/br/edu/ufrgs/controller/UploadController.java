@@ -1,11 +1,20 @@
 package br.edu.ufrgs.controller;
 
+import br.edu.ufrgs.dao.csv.SalesCsvParser;
 import br.edu.ufrgs.dto.PaginatedResultDto;
 import br.edu.ufrgs.dto.UploadDto;
+import br.edu.ufrgs.model.CommissionReport;
+import br.edu.ufrgs.model.Seller;
+import br.edu.ufrgs.repository.CommissionPolicyRepository;
+import br.edu.ufrgs.repository.CommissionReportRepository;
+import br.edu.ufrgs.service.CommissionProcessing;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -14,48 +23,75 @@ import java.util.UUID;
 @RequestMapping("/api/uploads")
 public class UploadController {
 
-    @PostMapping
-    public ResponseEntity<UploadDto> uploadFile(
+    private final CommissionPolicyRepository policyRepository;
+    private final CommissionReportRepository reportRepository;
+
+    public UploadController(
+            CommissionPolicyRepository policyRepository,
+            CommissionReportRepository reportRepository
+    ) {
+        this.policyRepository = policyRepository;
+        this.reportRepository = reportRepository;
+    }
+
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<UploadDto> uploadSalesCsv(
             @RequestParam("file") MultipartFile file
     ) {
+        try {
+            String csvContent = new String(file.getBytes(), StandardCharsets.UTF_8);
 
-        UploadDto response = new UploadDto(
-                UUID.randomUUID().toString(),
-                file.getOriginalFilename(),
-                LocalDateTime.now().toString(),
-                file.getSize() / (1024.0 * 1024.0),
-                "Processing"
-        );
+            List<Seller> sellers = new SalesCsvParser()
+                    .getSellerListFromReader(new StringReader(csvContent));
 
-        return ResponseEntity.ok(response);
-    }
-    
-    @GetMapping
-public PaginatedResultDto<UploadDto> listUploads() {
+            List<CommissionProcessing.Result> results =
+                    new CommissionProcessing(policyRepository.getPolicy())
+                            .processCommissions(sellers);
 
-    var uploads = List.of(
-            new UploadDto(
-                    "1",
-                    "Q2_Final_Sales_Batch.csv",
-                    "2023-10-24T14:32:00Z",
-                    4.2,
+            String reportId = UUID.randomUUID().toString();
+            CommissionReport report = new CommissionReport(
+                    reportId,
+                    file.getOriginalFilename(),
+                    LocalDateTime.now(),
+                    results
+            );
+            reportRepository.save(report);
+
+            return ResponseEntity.ok(new UploadDto(
+                    reportId,
+                    file.getOriginalFilename(),
+                    report.getUploadedAt().toString(),
+                    file.getSize() / (1024.0 * 1024.0),
                     "Completed"
-            ),
-            new UploadDto(
-                    "2",
-                    "Mid_Month_Draft_Global.csv",
-                    "2023-10-25T09:15:00Z",
-                    12.8,
-                    "Processing"
-            )
-    );
+            ));
 
-    return new PaginatedResultDto<>(
-            uploads,
-            1,
-            10,
-            uploads.size(),
-            1
-    );
-}
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to process sales CSV: " + e.getMessage(), e);
+        }
+    }
+
+    @GetMapping
+    public PaginatedResultDto<UploadDto> listUploads(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        List<CommissionReport> all = reportRepository.findAll();
+        int total = all.size();
+        int totalPages = total == 0 ? 1 : (int) Math.ceil((double) total / pageSize);
+        int fromIndex = Math.min((page - 1) * pageSize, total);
+        int toIndex = Math.min(fromIndex + pageSize, total);
+
+        List<UploadDto> dtos = all.subList(fromIndex, toIndex)
+                .stream()
+                .map(r -> new UploadDto(
+                        r.getId(),
+                        r.getFileName(),
+                        r.getUploadedAt().toString(),
+                        0.0,
+                        "Completed"
+                ))
+                .toList();
+
+        return new PaginatedResultDto<>(dtos, page, pageSize, total, totalPages);
+    }
 }
