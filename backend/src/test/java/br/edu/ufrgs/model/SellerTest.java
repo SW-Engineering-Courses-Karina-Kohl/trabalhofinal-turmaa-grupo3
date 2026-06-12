@@ -1,16 +1,20 @@
 package br.edu.ufrgs.model;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import br.edu.ufrgs.dto.Sale;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SellerTest {
   private Seller seller;
-
+  private CommissionReport commissionReport;
   @BeforeEach
   public void setUp() {
-    this.seller = new Seller("Adriana", 896);
+    this.commissionReport = new CommissionReport("", "", 0.0, 3, 0.0, new ArrayList<>());
+    this.seller = new Seller(896, "Adriana", "A", 0, 0.0f, 12000.00, this.commissionReport);
   }
 
   @Test

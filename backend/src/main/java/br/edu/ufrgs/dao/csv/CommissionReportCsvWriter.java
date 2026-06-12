@@ -1,6 +1,8 @@
 package br.edu.ufrgs.dao.csv;
 
-import br.edu.ufrgs.service.CommissionProcessing;
+import br.edu.ufrgs.model.CommissionReport;
+import br.edu.ufrgs.model.Seller;
+import br.edu.ufrgs.service.SalesReportProcessing;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.FileWriter;
@@ -12,25 +14,39 @@ public class CommissionReportCsvWriter {
   // @param: List<Result> results -> list of lines to be written 
   // @param: String filePath -> output location (with file name)
   // @return: void
-  public void write(List<CommissionProcessing.Result> results, String filePath) throws IOException {
-    File outputFile = new File(filePath);
-    outputFile.delete();
-    outputFile.createNewFile();
 
-    // write-to-file logic 
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-      writer.write("seller_id,name,total_sales,commission");
-      writer.newLine();
+    private CommissionReport commissionReport;
+    private List<Seller> sellers;
 
-      for (CommissionProcessing.Result result : results) {
-        writer.write(String.format(java.util.Locale.US, "%d,%s,%.2f,%.2f", result.sellerId(),
-              result.name(), result.totalSales(), result.commission()));
-        writer.newLine();
-      }
-
-      writer.close();
+    public CommissionReportCsvWriter(CommissionReport commissionReport) {
+        this.commissionReport = commissionReport;
+        this.sellers = commissionReport.getSellers();
     }
-  }
+
+    public void write(String filePath) throws IOException {
+        File outputFile = new File(filePath);
+        outputFile.delete();
+        outputFile.createNewFile();
+
+        // write-to-file logic
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+          writer.write("seller_id,name,total_sales,commission");
+          writer.newLine();
+
+          for(Seller seller : this.sellers) {
+              String line = String.format(
+                      java.util.Locale.US,
+                      "%d,%s,%.2f,%.2f",
+                      seller.getSellerId(),
+                      seller.getName(),
+                      seller.getTotalSales(),
+                      seller.getCommission()
+              );
+              writer.write(line);
+              writer.newLine();
+          }
+        }
+      }
 
   /*
   // @what: helper for invalid seller name

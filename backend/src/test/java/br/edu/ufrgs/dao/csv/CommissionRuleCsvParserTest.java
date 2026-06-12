@@ -1,10 +1,13 @@
 package br.edu.ufrgs.dao.csv;
 
 import static org.junit.jupiter.api.Assertions.*;
-import br.edu.ufrgs.model.CommissionPolicy;
-import br.edu.ufrgs.model.CommissionRule;
+import br.edu.ufrgs.dto.CommissionPolicy;
+import br.edu.ufrgs.dto.CommissionRule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +32,8 @@ public class CommissionRuleCsvParserTest {
   // @what: test parser
   @Test
   public void testReadRules() throws Exception {
-    parserCommissionPolicy = this.parser.readRules("src/test/resources/data/regras_comissao.csv");
+    FileInputStream fio = new FileInputStream("src/test/resources/data/regras_comissao.csv");
+    parserCommissionPolicy = this.parser.readRules(fio);
     assertEquals(commissionPolicy.getRules().size(), parserCommissionPolicy.getRules().size(),
         "size of commission rule list should be the same.");
     assertEquals(commissionPolicy.getRules().get(0).getMinimumGoal(),
@@ -49,8 +53,7 @@ public class CommissionRuleCsvParserTest {
   // @what: test invalid value in CSV
   @Test
   public void testReadRulesInvalid() throws Exception {
-    assertThrows(IllegalArgumentException.class, 
-        () -> this.parser.readRules("src/test/resources/data/regras_comissao_invalid.csv"),
-        "invalid values should not be accepted.");
+    FileInputStream fio = new FileInputStream("src/test/resources/data/regras_comissao_invalid.csv");
+    assertThrows(IllegalArgumentException.class, () -> this.parser.readRules(fio), "invalid values should not be accepted.");
   }
 }
