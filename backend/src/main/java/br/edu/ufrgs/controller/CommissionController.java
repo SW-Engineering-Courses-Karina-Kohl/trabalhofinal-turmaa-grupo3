@@ -1,174 +1,128 @@
 package br.edu.ufrgs.controller;
 
-import br.edu.ufrgs.dao.csv.CommissionRuleCsvParser;
-import br.edu.ufrgs.dao.csv.SalesCsvParser;
 import br.edu.ufrgs.dto.CommissionBatchDto;
-import br.edu.ufrgs.dto.ExportDto;
 import br.edu.ufrgs.dto.PaginatedResultDto;
 import br.edu.ufrgs.dto.SellerDto;
-import br.edu.ufrgs.model.CommissionPolicy;
-import br.edu.ufrgs.model.Seller;
+import br.edu.ufrgs.model.CommissionReport;
+import br.edu.ufrgs.repository.CommissionReportRepository;
 import br.edu.ufrgs.service.CommissionProcessing;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/commissions")
 public class CommissionController {
 
-    @GetMapping("/batches")
-public PaginatedResultDto<CommissionBatchDto> listBatches() {
+    private final CommissionReportRepository reportRepository;
 
-    try {
-
-        CommissionRuleCsvParser rulesParser =
-                new CommissionRuleCsvParser();
-
-        SalesCsvParser salesParser =
-                new SalesCsvParser();
-
-        var regrasResource = getClass()
-                .getClassLoader()
-                .getResource("data/regras_comissao.csv");
-
-        var vendasResource = getClass()
-                .getClassLoader()
-                .getResource("data/vendas.csv");
-
-        if (regrasResource == null || vendasResource == null) {
-            throw new RuntimeException("CSV files not found");
-        }
-
-        CommissionPolicy policy =
-                rulesParser.readRules(regrasResource.getPath());
-
-        List<Seller> sellers =
-                salesParser.getSellerList(vendasResource.getPath());
-
-        CommissionProcessing processor =
-                new CommissionProcessing(policy);
-
-        List<CommissionProcessing.Result> results =
-                processor.processCommissions(sellers);
-
-        List<SellerDto> sellerDtos =
-                results.stream()
-                        .map(r -> new SellerDto(
-                                String.valueOf(r.sellerId()),
-                                r.name(),
-                                getInitials(r.name()),
-                                r.totalSales(),
-                                calculateRate(r.totalSales()),
-                                r.commission()
-                        ))
-                        .toList();
-
-        double totalCommissionPool =
-                results.stream()
-                        .mapToDouble(CommissionProcessing.Result::commission)
-                        .sum();
-
-        int activeSellers = results.size();
-
-        double averagePayout =
-                activeSellers == 0
-                        ? 0
-                        : totalCommissionPool / activeSellers;
-
-        CommissionBatchDto batch =
-                new CommissionBatchDto(
-                        "1",
-                        "vendas.csv",
-                        "BATCH-1",
-                        totalCommissionPool,
-                        activeSellers,
-                        averagePayout,
-                        true,
-                        sellerDtos,
-                        activeSellers
-                );
-
-        return new PaginatedResultDto<>(
-                List.of(batch),
-                1,
-                10,
-                1,
-                1
-        );
-
-    } catch (Exception e) {
-        throw new RuntimeException(e);
+    public CommissionController(CommissionReportRepository reportRepository) {
+        this.reportRepository = reportRepository;
     }
-}
+
+    @GetMapping("/batches")
+    public PaginatedResultDto<CommissionBatchDto> listBatches(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        List<CommissionReport> all = reportRepository.findAll();
+        int total = all.size();
+        int totalPages = total == 0 ? 1 : (int) Math.ceil((double) total / pageSize);
+        int fromIndex = Math.min((page - 1) * pageSize, total);
+        int toIndex = Math.min(fromIndex + pageSize, total);
+
+        List<CommissionBatchDto> batches = all.subList(fromIndex, toIndex)
+                .stream()
+                .map(this::toCommissionBatchDto)
+                .toList();
+
+        return new PaginatedResultDto<>(batches, page, pageSize, total, totalPages);
+    }
 
     @GetMapping("/batches/{batchId}")
-public CommissionBatchDto getBatch(
-        @PathVariable String batchId
-) {
+    public ResponseEntity<CommissionBatchDto> getBatch(
+            @PathVariable String batchId
+    ) {
+        return reportRepository.findById(batchId)
+                .map(report -> ResponseEntity.ok(toCommissionBatchDto(report)))
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-    try {
+    @GetMapping("/batches/{batchId}/sellers")
+    public ResponseEntity<PaginatedResultDto<SellerDto>> getSellers(
+            @PathVariable String batchId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        return reportRepository.findById(batchId)
+                .map(report -> {
+                    List<SellerDto> all = report.getResults()
+                            .stream()
+                            .map(this::toSellerDto)
+                            .toList();
 
-        CommissionRuleCsvParser rulesParser =
-                new CommissionRuleCsvParser();
+                    int total = all.size();
+                    int totalPages = total == 0 ? 1 : (int) Math.ceil((double) total / pageSize);
+                    int fromIndex = Math.min((page - 1) * pageSize, total);
+                    int toIndex = Math.min(fromIndex + pageSize, total);
 
-        SalesCsvParser salesParser =
-                new SalesCsvParser();
+                    return ResponseEntity.ok(new PaginatedResultDto<>(
+                            all.subList(fromIndex, toIndex),
+                            page,
+                            pageSize,
+                            total,
+                            totalPages
+                    ));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-        var regrasResource = getClass()
-                .getClassLoader()
-                .getResource("data/regras_comissao.csv");
+    @GetMapping("/batches/{batchId}/export")
+    public ResponseEntity<byte[]> exportBatch(@PathVariable String batchId) {
+        return reportRepository.findById(batchId)
+                .map(report -> {
+                    StringBuilder csv = new StringBuilder();
+                    csv.append("seller_id,name,total_sales,commission\n");
+                    for (CommissionProcessing.Result r : report.getResults()) {
+                        csv.append(String.format("%d,%s,%.2f,%.2f\n",
+                                r.sellerId(), r.name(), r.totalSales(), r.commission()));
+                    }
+                    byte[] bytes = csv.toString().getBytes(StandardCharsets.UTF_8);
+                    String filename = report.getFileName().replace(".csv", "") + "_commissions.csv";
+                    return ResponseEntity.ok()
+                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                            .contentType(MediaType.parseMediaType("text/csv"))
+                            .body(bytes);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 
-        var vendasResource = getClass()
-                .getClassLoader()
-                .getResource("data/vendas.csv");
+    private CommissionBatchDto toCommissionBatchDto(CommissionReport report) {
+        List<SellerDto> sellerDtos = report.getResults()
+                .stream()
+                .map(this::toSellerDto)
+                .toList();
 
-        if (regrasResource == null || vendasResource == null) {
-            throw new RuntimeException("CSV files not found");
-        }
+        double totalCommissionPool = report.getResults()
+                .stream()
+                .mapToDouble(CommissionProcessing.Result::commission)
+                .sum();
 
-        CommissionPolicy policy =
-                rulesParser.readRules(regrasResource.getPath());
+        int activeSellers = report.getResults().size();
 
-        List<Seller> sellers =
-                salesParser.getSellerList(vendasResource.getPath());
-
-        CommissionProcessing processor =
-                new CommissionProcessing(policy);
-
-        List<CommissionProcessing.Result> results =
-                processor.processCommissions(sellers);
-
-        List<SellerDto> sellerDtos =
-                results.stream()
-                        .map(r -> new SellerDto(
-                                String.valueOf(r.sellerId()),
-                                r.name(),
-                                getInitials(r.name()),
-                                r.totalSales(),
-                                calculateRate(r.totalSales()),
-                                r.commission()
-                        ))
-                        .toList();
-
-        double totalCommissionPool =
-                results.stream()
-                        .mapToDouble(CommissionProcessing.Result::commission)
-                        .sum();
-
-        int activeSellers = results.size();
-
-        double averagePayout =
-                activeSellers == 0
-                        ? 0
-                        : totalCommissionPool / activeSellers;
+        double averagePayout = activeSellers == 0
+                ? 0
+                : totalCommissionPool / activeSellers;
 
         return new CommissionBatchDto(
-                batchId,
-                "vendas.csv",
-                "BATCH-" + batchId,
+                report.getId(),
+                report.getFileName(),
+                "BATCH-" + report.getId(),
                 totalCommissionPool,
                 activeSellers,
                 averagePayout,
@@ -176,155 +130,31 @@ public CommissionBatchDto getBatch(
                 sellerDtos,
                 activeSellers
         );
-
-    } catch (Exception e) {
-        throw new RuntimeException(e);
     }
-}
 
-    @GetMapping("/batches/{batchId}/sellers")
-public PaginatedResultDto<SellerDto> getSellers(
-        @PathVariable String batchId
-) {
+    private SellerDto toSellerDto(CommissionProcessing.Result r) {
+        double rate = r.totalSales() == 0
+                ? 0
+                : r.commission() / r.totalSales() * 100;
 
-    try {
-
-        CommissionRuleCsvParser rulesParser =
-                new CommissionRuleCsvParser();
-
-        SalesCsvParser salesParser =
-                new SalesCsvParser();
-
-        var regrasResource = getClass()
-        .getClassLoader()
-        .getResource("data/regras_comissao.csv");
-
-var vendasResource = getClass()
-        .getClassLoader()
-        .getResource("data/vendas.csv");
-
-if (regrasResource == null || vendasResource == null) {
-    throw new RuntimeException("CSV files not found in resources/data");
-}
-
-String regrasPath = regrasResource.getPath();
-String vendasPath = vendasResource.getPath();
-
-CommissionPolicy policy =
-        rulesParser.readRules(regrasPath);
-
-List<Seller> sellers =
-        salesParser.getSellerList(vendasPath);
-
-        CommissionProcessing processor =
-                new CommissionProcessing(policy);
-
-        List<CommissionProcessing.Result> results =
-                processor.processCommissions(sellers);
-
-        List<SellerDto> sellerDtos =
-                results.stream()
-                        .map(r -> new SellerDto(
-                                String.valueOf(r.sellerId()),
-                                r.name(),
-                                getInitials(r.name()),
-                                r.totalSales(),
-                                calculateRate(r.totalSales()),
-                                r.commission()
-                        ))
-                        .toList();
-
-        return new PaginatedResultDto<>(
-                sellerDtos,
-                1,
-                10,
-                sellerDtos.size(),
-                1
+        return new SellerDto(
+                String.valueOf(r.sellerId()),
+                r.name(),
+                getInitials(r.name()),
+                r.totalSales(),
+                rate,
+                r.commission()
         );
-
-    } catch (Exception e) {
-        throw new RuntimeException(e);
     }
-}
-
-    @GetMapping("/batches/{batchId}/export")
-public ExportDto exportBatch(
-        @PathVariable String batchId
-) {
-
-    try {
-
-        CommissionRuleCsvParser rulesParser =
-                new CommissionRuleCsvParser();
-
-        SalesCsvParser salesParser =
-                new SalesCsvParser();
-
-        var regrasResource = getClass()
-                .getClassLoader()
-                .getResource("data/regras_comissao.csv");
-
-        var vendasResource = getClass()
-                .getClassLoader()
-                .getResource("data/vendas.csv");
-
-        if (regrasResource == null || vendasResource == null) {
-            throw new RuntimeException("CSV files not found");
-        }
-
-        CommissionPolicy policy =
-                rulesParser.readRules(regrasResource.getPath());
-
-        List<Seller> sellers =
-                salesParser.getSellerList(vendasResource.getPath());
-
-        CommissionProcessing processor =
-                new CommissionProcessing(policy);
-
-        List<CommissionProcessing.Result> results =
-                processor.processCommissions(sellers);
-
-        double totalCommissionPool =
-                results.stream()
-                        .mapToDouble(CommissionProcessing.Result::commission)
-                        .sum();
-
-        return new ExportDto(
-                batchId,
-                "vendas.csv",
-                LocalDateTime.now().toString(),
-                totalCommissionPool,
-                "Export generated successfully"
-        );
-
-    } catch (Exception e) {
-        throw new RuntimeException(e);
-    }
-}
 
     private String getInitials(String name) {
-
-    String[] parts = name.split(" ");
-
-    StringBuilder initials = new StringBuilder();
-
-    for (String p : parts) {
-        if (!p.isBlank()) {
-            initials.append(
-                    Character.toUpperCase(p.charAt(0))
-            );
+        String[] parts = name.split(" ");
+        StringBuilder initials = new StringBuilder();
+        for (String p : parts) {
+            if (!p.isBlank()) {
+                initials.append(Character.toUpperCase(p.charAt(0)));
+            }
         }
+        return initials.toString();
     }
-
-    return initials.toString();
-}
-
-private double calculateRate(double totalSales) {
-
-    if (totalSales >= 10000.0) {
-        return 8.0;
-    }
-
-    return 5.0;
-}
 }
