@@ -1,71 +1,108 @@
 package br.edu.ufrgs.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import br.edu.ufrgs.model.CommissionPolicy;
-import br.edu.ufrgs.model.CommissionRule;
+import br.edu.ufrgs.dto.CommissionPolicy;
+import br.edu.ufrgs.dto.CommissionRule;
+import br.edu.ufrgs.model.CommissionReport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import br.edu.ufrgs.model.Seller;
-import br.edu.ufrgs.model.Sale;
+import br.edu.ufrgs.dto.Sale;
+
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommissionProcessingTest {
-  private CommissionProcessing commissionProcessor;
-  private CommissionPolicy commissionPolicy;
-  private List<CommissionRule> commissionRuleList = new ArrayList<>();
-  private CommissionRule commissionRuleOne = new CommissionRule(5600.99, 0.08);
-  private CommissionRule commissionRuleTwo = new CommissionRule(7600.99, 0.1);
-  private List<Seller> sellers = new ArrayList<>();
-  private Seller sellerOne = new Seller("João", 67);
-  private Seller sellerTwo = new Seller("Ismael", 37);
-  private Sale saleOneSellerOne = new Sale(67, "V01", 600.00);
-  private Sale saleTwoSellerOne = new Sale(67, "V02", 800.00);
-  private Sale saleOneSellerTwo = new Sale(37, "V03", 8800.00);
-  private Sale saleTwoSellerTwo = new Sale(37, "V04", 200.00);
-  private List<CommissionProcessing.Result> results = new ArrayList<>();
-  private List<CommissionProcessing.Result> expectedResults = new ArrayList<>();
-  private CommissionProcessing.Result lineOne = new CommissionProcessing.Result(67, "João", 1400.00, 0.00);
-  private CommissionProcessing.Result lineTwo = new CommissionProcessing.Result(37, "Ismael", 9000.00, 900.00);
- 
+  private SalesReportProcessing commissionProcessor;
+  private List<Seller> mockSellers = new ArrayList<>();
+
+  private final CommissionReport commissionReport = new CommissionReport("", "", 0.0, 3, 0.0, mockSellers);
+
+  private String csv = "";
+
+  private final double[][] commissionRuleSet = new double[][]{
+          new double[]{ 5600.99, 0.08 },
+          new double[]{ 7600.99, 0.1  }
+  };
+
+  private String newSaleLine(Seller seller, Sale sale) {
+    return String.format("%s,%s,%s,%.2f\n", sale.getSaleId(), seller.getSellerId(), seller.getName(), sale.getSalePrice());
+  }
+
   // @what: set up mocks for testing
   @BeforeEach
   public void setUp() {
-    commissionRuleList.add(commissionRuleOne);
-    commissionRuleList.add(commissionRuleTwo);
-    commissionPolicy = new CommissionPolicy(commissionRuleList);
-    sellerOne.addSale(saleOneSellerOne);
-    sellerOne.addSale(saleTwoSellerOne);
-    sellerTwo.addSale(saleOneSellerTwo);
-    sellerTwo.addSale(saleTwoSellerTwo);
-    sellers.add(sellerOne);
-    sellers.add(sellerTwo);
-    commissionProcessor = new CommissionProcessing(commissionPolicy);
-    expectedResults.add(lineOne);
-    expectedResults.add(lineTwo);
+    List<CommissionRule> commissionRuleList = new ArrayList<>();
+    for (double[] rule : commissionRuleSet) {
+      commissionRuleList.add(new CommissionRule(rule[0], rule[1]));
+    }
+    CommissionPolicy commissionPolicy = new CommissionPolicy(commissionRuleList);
+    commissionProcessor = new SalesReportProcessing(commissionPolicy);
+
+    StringBuilder csvBuilder = new StringBuilder("vendaId,vendedorId,nome,valorVenda\n");
+
+    mockSellers = new ArrayList<>();
+
+    // -------- Seller 1 --------
+    Seller seller1 = new Seller(67, "João", "J", 1400.00, 0.0f, 0.00, this.commissionReport);
+
+    Sale saleV01 = new Sale(seller1.getSellerId(), "V01", 600.00);
+    seller1.addSale(saleV01);
+    csvBuilder.append(newSaleLine(seller1, saleV01));
+
+    Sale saleV02 = new Sale(seller1.getSellerId(), "V02", 800.00);
+    seller1.addSale(saleV02);
+    csvBuilder.append(newSaleLine(seller1, saleV02));
+
+    mockSellers.add(seller1);
+
+    // -------- Seller 2 --------
+    Seller seller2 = new Seller(37, "Ismael", "I", 9000.00, 0.1f, 900.00, this.commissionReport);
+
+    Sale saleV03 = new Sale(seller2.getSellerId(), "V03", 8800.00);
+    seller2.addSale(saleV03);
+    csvBuilder.append(newSaleLine(seller2, saleV03));
+
+    Sale saleV04 = new Sale(seller2.getSellerId(), "V04", 200.00);
+    seller2.addSale(saleV04);
+    csvBuilder.append(newSaleLine(seller2, saleV04));
+
+    mockSellers.add(seller2);
+
+    this.csv = csvBuilder.toString();
   }
 
   // @what: test processing of commissions
   @Test
   public void testProcessCommissions() {
-    results = commissionProcessor.processCommissions(sellers);
-    assertFalse(expectedResults.isEmpty(), "expectedResults list should not be empty.");
-    assertFalse(results.isEmpty(), "results list should not be empty.");
-    assertEquals(expectedResults.get(0).sellerId(), results.get(0).sellerId(),
-                 "sellerId of first seller should be the same.");
-    assertEquals(expectedResults.get(0).name(), results.get(0).name(),
-                 "name of first seller should be the same.");
-    assertEquals(expectedResults.get(0).totalSales(), results.get(0).totalSales(),
-                 "totalSales of first seller should be the same.");
-    assertEquals(expectedResults.get(0).commission(), results.get(0).commission(),
-                 "commission of first seller should be the same.");
-    assertEquals(expectedResults.get(1).name(), results.get(1).name(),
-                 "name of second seller should be the same.");
-    assertEquals(expectedResults.get(1).sellerId(), results.get(1).sellerId(),
-                 "sellerId of second seller should be the same.");
-    assertEquals(expectedResults.get(1).totalSales(), results.get(1).totalSales(),
-                 "totalSales of second seller should be the same.");
-    assertEquals(expectedResults.get(1).commission(), results.get(1).commission(),
-                 "commission of second seller should be the same.");
+      Seller mockSeller1 = mockSellers.get(0);
+      Seller mockSeller2 = mockSellers.get(1);
+
+      assertDoesNotThrow(() -> commissionProcessor.process("test", new StringReader(csv)));
+
+      List<Seller> sellers = commissionProcessor.getSellers();
+
+      Seller seller1 = sellers.get(0);
+      Seller seller2 = sellers.get(1);
+
+      assertEquals(mockSellers.size(), sellers.size(), "sellers size mismatch");
+
+      Seller[][] pairings = new Seller[][]{
+              new Seller[] {mockSeller1, seller1},
+              new Seller[] {mockSeller2, seller2}
+      };
+
+      for (int i = 0; i < pairings.length; i++) {
+        Seller[] pair = pairings[i];
+        Seller mockSeller = pair[0];
+        Seller seller = pair[1];
+
+        assertEquals(mockSeller.getSellerId(),   seller.getSellerId(),   String.format("#%s sellerId mismatch", i));
+        assertEquals(mockSeller.getName(),       seller.getName(),       String.format("#%s name mismatch", i));
+        assertEquals(mockSeller.getTotalSales(), seller.getTotalSales(), String.format("#%s totalSales mismatch", i));
+        assertEquals(mockSeller.getCommission(), seller.getCommission(), String.format("#%s commission mismatch", i));
+      }
   }
 } 

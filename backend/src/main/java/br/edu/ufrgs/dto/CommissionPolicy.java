@@ -7,7 +7,9 @@ import java.util.List;
 // @what: class to encapsulate list of rules
 public class CommissionPolicy {
   private List<CommissionRule> rules;
-  
+
+  public CommissionPolicy() {}
+
   public CommissionPolicy(List<CommissionRule> rules) {
     this.rules = rules;
     // sorts rules by highest minimumGoal to guarantee that

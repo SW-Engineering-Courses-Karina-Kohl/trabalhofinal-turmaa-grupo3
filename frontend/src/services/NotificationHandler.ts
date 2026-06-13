@@ -1,4 +1,5 @@
 import { UploadSalesReportResponse } from '@/api/uploads';
+import { BACKEND_URL } from '@/config/config';
 import { toast } from 'sonner'
 
 
@@ -22,32 +23,29 @@ class NotificationHandlerSingleton {
       toast("Conexão WS estabelecida com o servidor.")
       return
     }
-    
-    if(payload.type != 'ping') console.log(payload)
+    console.log(payload)
+    if(payload.type == 'ping') console.log(payload)
 
-    if(payload.message !== undefined) {
-      switch(payload.message.type) {
-        case 'processing':
-          if (this.onProcessingCommissionReport) {
-            this.onProcessingCommissionReport(payload.message)
-            toast(`Arquivo ${payload.message.filename} está sendo processado.`)
-          }
-          break
-        case 'processed':
-          if (this.onProcessedCommissionReport) {
-            this.onProcessedCommissionReport(payload.message);
-            toast.success(`Arquivo ${payload.message.filename} foi processado com sucesso!`)
-          }
-          break
-        case 'pdf':
-        case 'csv':
-          if (payload.message.url != "") {
-            this.downloadFile(payload.message.url, payload.message.filename)
-            this.onComissionReportExported()
-          }
-          break
-      }
+    switch(payload.type) {
+      case 'processing':
+        if (this.onProcessingCommissionReport) {
+          this.onProcessingCommissionReport(payload)
+          toast(`Arquivo ${payload.fileName} está sendo processado.`)
+        }
+        break
+      case 'processed':
+        if (this.onProcessedCommissionReport) {
+          this.onProcessedCommissionReport(payload);
+          toast.success(`Arquivo ${payload.fileName} foi processado com sucesso!`)
+        }
+        break
+      case 'pdf':
+      case 'csv':
+        this.downloadFile(payload.url, payload.fileName)
+        this.onComissionReportExported()
+        break
     }
+    
   }
 
 
@@ -71,7 +69,7 @@ class NotificationHandlerSingleton {
   }
 
   private async downloadFile(downloadLink : string, filename : string) {
-    const response = await fetch(`http://api.localhost${downloadLink}`)
+    const response = await fetch(`${BACKEND_URL}${downloadLink}`)
     const blob = await response.blob()
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')

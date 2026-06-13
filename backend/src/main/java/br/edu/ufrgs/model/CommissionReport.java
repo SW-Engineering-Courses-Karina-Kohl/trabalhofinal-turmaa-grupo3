@@ -1,41 +1,107 @@
 package br.edu.ufrgs.model;
 
-import br.edu.ufrgs.service.CommissionProcessing;
-import java.time.LocalDateTime;
+
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTransient;
+import jakarta.persistence.*;
+
 import java.util.List;
 
+@Entity
+@Table(name = "commission_reports")
 public class CommissionReport {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    private final String id;
-    private final String fileName;
-    private final LocalDateTime uploadedAt;
-    private final List<CommissionProcessing.Result> results;
+    @Column(nullable = false)
+    private String filename;
 
-    public CommissionReport(
-                            String id,
-                            String fileName,
-                            LocalDateTime uploadedAt,
-                            List<CommissionProcessing.Result> results
-                            ) {
-        this.id = id;
-        this.fileName = fileName;
-        this.uploadedAt = uploadedAt;
-        this.results = results;
+    @Column(nullable = false)
+    private String status;
+
+    @JsonbProperty("commission_pool")
+    @Column(name = "commission_pool", nullable = false)
+    private double commissionPool = 0.0;
+
+    @JsonbProperty("seller_count")
+    @Column(name = "seller_count", nullable = false)
+    private int sellerCount = 0;
+
+    @JsonbProperty("average_payout")
+    @Column(name = "average_payout", nullable = false)
+    private double averagePayout = 0.0;
+
+    @JsonbTransient
+    @OneToMany(mappedBy = "commissionReport", fetch = FetchType.LAZY)
+    private List<Seller> sellers;
+
+
+    public CommissionReport() {}
+
+
+    public CommissionReport(String filename, String status, double commissionPool, int sellerCount, double averagePayout, List<Seller> sellers) {
+        this.filename = filename;
+        this.status = status;
+        this.commissionPool = commissionPool;
+        this.sellerCount = sellerCount;
+        this.averagePayout = averagePayout;
+        this.sellers = sellers;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getFilename() {
+        return filename;
     }
 
-    public LocalDateTime getUploadedAt() {
-        return uploadedAt;
+    public String getStatus() {
+        return status;
     }
 
-    public List<CommissionProcessing.Result> getResults() {
-        return results;
+    public double getCommissionPool() {
+        return commissionPool;
+    }
+
+    public int getSellerCount() {
+        return sellerCount;
+    }
+
+    public double getAveragePayout() {
+        return averagePayout;
+    }
+
+    public List<Seller> getSellers() {
+        return sellers;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setCommissionPool(double commissionPool) {
+        this.commissionPool = commissionPool;
+    }
+
+    public void setSellerCount(int sellerCount) {
+        this.sellerCount = sellerCount;
+    }
+
+    public void setAveragePayout(double averagePayout) {
+        this.averagePayout = averagePayout;
+    }
+
+    public void setSellers(List<Seller> sellers) {
+        this.sellers = sellers;
     }
 }

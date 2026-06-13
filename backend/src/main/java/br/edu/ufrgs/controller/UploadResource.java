@@ -7,6 +7,7 @@ import br.edu.ufrgs.dto.PagedResponse;
 import br.edu.ufrgs.model.CommissionReport;
 import br.edu.ufrgs.model.Seller;
 import br.edu.ufrgs.service.SalesReportProcessing;
+import br.edu.ufrgs.websocket.NotificationBroadcaster;
 import jakarta.inject.Inject;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.ws.rs.*;
@@ -20,7 +21,7 @@ import java.io.Reader;
 import java.util.List;
 
 
-@Path("/uploads")
+@Path("/v1/uploads")
 @Produces(MediaType.APPLICATION_JSON)
 public class UploadResource {
 
@@ -44,9 +45,9 @@ public class UploadResource {
 
 		CommissionReport report = processing.getCommissionReport();
 		commissionRepository.save(report);
+		NotificationBroadcaster.getInstance().broadcastProcessedCommissionReport(report);
 
-		List<Seller> sellers = processing.getSellers();
-		sellers.forEach(seller -> sellerRepository.save(seller));
+		sellerRepository.saveAll(processing.getSellers());
 
 		return Response.status(Response.Status.CREATED)
 				.entity(report)

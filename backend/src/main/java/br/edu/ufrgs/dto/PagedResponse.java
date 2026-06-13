@@ -5,15 +5,15 @@ import java.util.List;
 // dto/PagedResponse.java
 public class PagedResponse<T> {
     public static class Builder<T> {
-	    private List<T> content;
+	    private List<T> data;
 	    private int page;
-	    private int size;
-	    private long totalElements;
+	    private int pageSize;
+	    private long total;
 	    private int totalPages;
 	    private boolean last;
 
-	    public Builder<T> content(List<T> content) {
-			this.content = content;
+	    public Builder<T> data(List<T> data) {
+			this.data = data;
 			return this;
 	    }
 
@@ -22,13 +22,13 @@ public class PagedResponse<T> {
 			return this;
 	    }
 
-	    public Builder<T> size(int size) {
-			this.size = size;
+	    public Builder<T> pageSize(int pageSize) {
+			this.pageSize = pageSize;
 			return this;
 	    }
 
-	    public Builder<T> totalElements(long totalElements) {
-			this.totalElements = totalElements;
+	    public Builder<T> total(long total) {
+			this.total = total;
 			return this;
 	    }
 
@@ -43,7 +43,7 @@ public class PagedResponse<T> {
 	    }
 
 	    public PagedResponse<T> build() {
-			return new PagedResponse<>(content, page, size, totalElements, totalPages, last);
+			return new PagedResponse<>(data, page, pageSize, total, totalPages, last);
 	    }
 	}
 
@@ -51,40 +51,40 @@ public class PagedResponse<T> {
 	    return new Builder<>();
 	}
 	
-    private List<T> content;
+    private List<T> data;
     private int page;
-    private int size;
-    private long totalElements;
+    private int pageSize;
+    private long total;
     private int totalPages;
     private boolean last;
 
     // Default constructor (needed for JSON serialization)
     public PagedResponse() {}
 
-    public PagedResponse(List<T> content, int page, int size, long totalElements, int totalPages, boolean last) {
-        this.content = content;
+    public PagedResponse(List<T> data, int page, int pageSize, long total, int totalPages, boolean last) {
+        this.data = data;
         this.page = page;
-        this.size = size;
-        this.totalElements = totalElements;
+        this.pageSize = pageSize;
+        this.total = total;
         this.totalPages = totalPages;
         this.last = last;
     }
 
     // Getters and Setters
-    public List<T> getContent() {
-        return content;
+    public List<T> getData() {
+        return data;
     }
 
     public int getPage() {
         return page;
     }
 
-    public int getSize() {
-        return size;
+    public int getPageSize() {
+        return pageSize;
     }
 
-    public long getTotalElements() {
-        return totalElements;
+    public long getTotal() {
+        return total;
     }
 
     public int getTotalPages() {

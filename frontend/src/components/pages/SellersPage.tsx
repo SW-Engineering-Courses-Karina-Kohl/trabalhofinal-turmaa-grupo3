@@ -16,10 +16,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Currency } from "../ui/UIHelpers";
 
-function fmt(n: number) {
-  return n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-}
-
 function fmtPct(n: number) {
   return `${n.toFixed(1)}%`;
 }
