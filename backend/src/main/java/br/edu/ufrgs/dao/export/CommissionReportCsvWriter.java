@@ -1,4 +1,4 @@
-package br.edu.ufrgs.dao.csv;
+package br.edu.ufrgs.dao.export;
 
 import br.edu.ufrgs.dao.export.ExportFileContract;
 import br.edu.ufrgs.model.Seller;

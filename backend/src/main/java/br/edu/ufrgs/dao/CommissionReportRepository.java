@@ -27,17 +27,21 @@ public class CommissionReportRepository {
 
         // Get page
         List<CommissionReport> reports = em.createQuery(querySelectAll, CommissionReport.class)
-                .setFirstResult(page * size)
+                .setFirstResult((page - 1) * size)
                 .setMaxResults(size)
                 .getResultList();
 
         int totalPages = (int) Math.ceil((double) count / size);
 
+        System.out.print("Reports: " + reports.size());
+        System.out.println("Count: " + count);
+        System.out.println("Page: " + page + " Size: " + size + " FirstResult: " + (page * size));
+
         return PagedResponse.<CommissionReport>builder()
-        	.content(reports)
+        	.data(reports)
         	.page(page)
-        	.size(size)
-        	.totalElements(count)
+        	.pageSize(size)
+        	.total(count)
         	.totalPages(totalPages)
         	.last(page >= totalPages - 1)
         	.build();

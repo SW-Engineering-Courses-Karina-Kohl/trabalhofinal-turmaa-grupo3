@@ -6,7 +6,9 @@
  *
  */
 
-const BASE_URL = "http://api.localhost";
+import { BACKEND_URL } from "@/config/config";
+
+const BASE_URL = BACKEND_URL;
 
 export class ApiError extends Error {
   constructor(

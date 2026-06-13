@@ -2,12 +2,13 @@ package br.edu.ufrgs.controller.v1;
 
 import br.edu.ufrgs.dao.CommissionReportRepository;
 import br.edu.ufrgs.dao.SellerRepository;
-import br.edu.ufrgs.dao.csv.CommissionReportCsvWriter;
+import br.edu.ufrgs.dao.export.CommissionReportCsvWriter;
 import br.edu.ufrgs.dao.export.CommissionReportPdfWriter;
 import br.edu.ufrgs.dao.export.ExportFileContract;
 import br.edu.ufrgs.dto.PagedResponse;
 import br.edu.ufrgs.model.CommissionReport;
 import br.edu.ufrgs.model.Seller;
+import br.edu.ufrgs.websocket.NotificationBroadcaster;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -94,7 +95,7 @@ public class CommissionReportResource {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
 		}
 
-		// TODO Add notification via websocket to send download link through WS
+		NotificationBroadcaster.getInstance().broadcastExportFile(docType, "/api/v1/commissions/downloads/" + filename, filename);
 
 		return Response.ok().build();
 	}

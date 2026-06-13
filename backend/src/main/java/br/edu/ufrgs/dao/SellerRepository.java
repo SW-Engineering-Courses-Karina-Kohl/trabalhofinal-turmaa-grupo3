@@ -10,8 +10,8 @@ import java.util.List;
 
 @Stateless
 public class SellerRepository {
-    private static final String queryCount = "SELECT COUNT(s) FROM Seller s WHERE s.commissionReportId = :id";
-    private static final String querySelectAll = "SELECT s FROM Seller s WHERE s.commissionReportId = %s ORDER BY s.id";
+    private static final String queryCount = "SELECT COUNT(s) FROM Seller s WHERE s.commissionReport.id = :id";
+    private static final String querySelectAll = "SELECT s FROM Seller s WHERE s.commissionReport.id = :id ORDER BY s.id";
 
     @PersistenceContext(unitName = "salesopsPU")
     private EntityManager em;
@@ -34,17 +34,17 @@ public class SellerRepository {
         // Get page
         List<Seller> sellers = em.createQuery(querySelectAll, Seller.class)
                 .setParameter("id", id)
-                .setFirstResult(page * size)
+                .setFirstResult((page - 1) * size)
                 .setMaxResults(size)
                 .getResultList();
 
         int totalPages = (int) Math.ceil((double) count / size);
 
         return PagedResponse.<Seller>builder()
-        	.content(sellers)
+        	.data(sellers)
         	.page(page)
-        	.size(size)
-        	.totalElements(count)
+        	.pageSize(size)
+        	.total(count)
         	.totalPages(totalPages)
         	.last(page >= totalPages - 1)
         	.build();
@@ -54,5 +54,10 @@ public class SellerRepository {
         em.persist(report);
         em.flush();
         return report;
+    }
+
+    public void saveAll(List<Seller> sellers) {
+        sellers.forEach(em::persist);
+        em.flush();
     }
 }

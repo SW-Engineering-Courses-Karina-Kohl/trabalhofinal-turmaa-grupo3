@@ -1,9 +1,9 @@
 package br.edu.ufrgs.dao.csv;
 
-import br.edu.ufrgs.factory.SellerBuilder;
+import br.edu.ufrgs.dao.export.CommissionReportCsvWriter;
 import br.edu.ufrgs.model.CommissionReport;
 import br.edu.ufrgs.model.Seller;
-import br.edu.ufrgs.service.SalesReportProcessing;
+
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

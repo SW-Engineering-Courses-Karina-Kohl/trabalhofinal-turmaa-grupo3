@@ -13,6 +13,7 @@ public class NotificationEndpoint {
     @OnOpen
     public void onOpen(Session session) {
         broadcaster.addSession(session);
+        broadcaster.broadcastWelcome();
         System.out.println("New WebSocket client connected: " + session.getId());
     }
 
@@ -32,5 +33,12 @@ public class NotificationEndpoint {
     @OnMessage
     public void onMessage(String message, Session session) {
         System.out.println("Received from client " + session.getId() + ": " + message);
+        if (message.contains("\"command\":\"ping\"")) {
+            try {
+                session.getBasicRemote().sendText("{\"type\":\"ping\"}");
+            } catch (IOException e) {
+                broadcaster.removeSession(session);
+            }
+        }
     }
 }

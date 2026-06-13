@@ -1,6 +1,8 @@
 package br.edu.ufrgs.model;
 
 import br.edu.ufrgs.dto.Sale;
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -22,15 +24,19 @@ public class Seller {
   @Column(nullable = false)
   private String initials;
 
+  @JsonbProperty("total_sales")
   @Column(name = "total_sales", nullable = false)
   private double totalSales = 0.0f;
 
+  @JsonbProperty("commission_rate")
   @Column(name = "commission_rate", nullable = false)
   private float commissionRate = 0.0f;
 
+  @JsonbProperty("final_commission")
   @Column(nullable = false)
   private double commission = 0.0f;
 
+  @JsonbTransient
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "commission_report_id", nullable = false)
   private CommissionReport commissionReport;
