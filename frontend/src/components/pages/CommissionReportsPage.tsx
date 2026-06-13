@@ -57,6 +57,18 @@ export default function ResultsArchivePage() {
           ))
         )}
       </div>
-    </div>
+
+      <Pagination
+        page={pageControls.page ?? 1}
+        totalPages={pageControls.totalPages ?? 0}
+        total={pageControls.total ?? 0}
+        pageSize={COMISSIONS_PAGE_SIZE}
+        nextPage={pageControls.nextPage}
+        prevPage={pageControls.prevPage} 
+        canNext={pageControls.canNext} 
+        canPrev={pageControls.canPrev} 
+        goTo={pageControls.goTo}
+      />
+  </div>
   );
 }

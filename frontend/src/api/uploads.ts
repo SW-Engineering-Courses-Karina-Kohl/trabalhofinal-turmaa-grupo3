@@ -1,46 +1,32 @@
-/**
- * api/uploads.ts
- *
- * File upload and recent-uploads management.
- * TODO (implementor): wire real endpoints when the backend is ready.
- */
-
+import { NotificationHandler } from "@/services/NotificationHandler";
 import { http } from "./client";
-import type { GetUploadsParams, PaginatedResult, Upload } from "@/types";
 
-export const uploadsApi = {
-  /**
-   * List recent uploads with pagination.
-   */
-  listUploads({ page = 1, pageSize = 10 }: GetUploadsParams = {}): Promise<
-    PaginatedResult<Upload>
-  > {
-    return http.get<PaginatedResult<Upload>>("/uploads", { page, pageSize });
-  },
+// ── ROUTES ────────────────────────────────────────────────────────────────
+const API_ROUTE = '/api/v1';
+const UPLOAD_ENDPOINT = '/uploads';
 
-  /**
-   * Upload a CSV/XLSX file for commission processing.
-   * @param file  The file selected by the user.
-   * @returns     The newly created Upload record.
-   */
-  uploadFile(file: File): Promise<Upload> {
-    const form = new FormData();
-    form.append("file", file);
-    return http.postForm<Upload>("/uploads", form);
-  },
+// ── API FUNCTIONS ────────────────────────────────────────────────────────────────
+export interface UploadSalesReportResponse {
+  id? : number;
+  filename? : string;
+  status? : string;
+  created_at?: string;
+  message? : string;
+}
+const uploadSalesReport = (file : File) : Promise<UploadSalesReportResponse> => {
+  const form = new FormData();
+  form.append("file", file);
+  return http.postForm<UploadSalesReportResponse>(`${API_ROUTE}${UPLOAD_ENDPOINT}`, form).then(r => {
+    NotificationHandler.onSalesReportUploaded(r);
+    return r;
+  }); 
+}
 
-  /**
-   * Delete an upload record (and its associated data).
-   */
-  deleteUpload(uploadId: string): Promise<void> {
-    return http.delete<void>(`/uploads/${uploadId}`);
-  },
+// ── API CONTROLLER ────────────────────────────────────────────────────────────────
+export const useUploadApi = () => {
+  return {
+    uploadSalesReport,
+  }
+}
 
-  /**
-   * Poll upload status until it leaves the "Processing" state.
-   * TODO (implementor): replace polling with WebSocket / SSE if preferred.
-   */
-  getUploadStatus(uploadId: string): Promise<Upload> {
-    return http.get<Upload>(`/uploads/${uploadId}`);
-  },
-};
+

@@ -1,11 +1,14 @@
 require "swagger_helper"
 
 RSpec.describe 'Commission Reports API', type: :request do
-  path '/api/v1/commisions' do
+  path '/api/v1/commissions' do
     get 'Get List of all reports' do
       tags 'Commission Reports'
       produces 'application/json'
  
+      parameter name: :page, in: :query, type: :integer, required: true
+      parameter name: :size, in: :query, type: :integer, required: true
+
       response '200', 'reports' do
         schema type: :object,
           properties: {
@@ -29,17 +32,17 @@ RSpec.describe 'Commission Reports API', type: :request do
               } 
             },
             page:      { type: :integer },
-            page_size: { type: :integer },
+            size:      { type: :integer },
             total:     { type: :integer },
             total_pages: { type: :integer }
           },
-          required: ['data', 'page', 'page_size', 'total', 'total_pages']
+          required: ['data', 'page', 'size', 'total', 'total_pages']
         run_test!
       end
     end
   end
 
-  path '/api/v1/commisions/{id}' do
+  path '/api/v1/commissions/{id}' do
     get 'Get a report' do
       tags 'Commission Reports'
       produces 'application/json'
@@ -68,14 +71,36 @@ RSpec.describe 'Commission Reports API', type: :request do
         run_test!
       end
     end
-  end
 
-  path '/api/v1/commisions/{id}/sellers' do
+    delete 'Delete report' do
+      tags 'Delete a specific report'
+
+      produces 'application/json'
+
+      parameter name: :id, in: :path, type: :integer, required: true
+
+      response '200', 'sales csv received' do
+        schema type: :object,
+          properties: {
+            id: { type: :integer }
+          },
+          required: ['id']
+
+        run_test!
+      end
+    end
+  end
+    
+ 
+
+  path '/api/v1/commissions/{id}/sellers' do
     get 'Get the sellers of a report' do
       tags 'Commission Sellers'
       produces 'application/json'
 
       parameter name: :id, in: :path, type: :integer, required: true
+      parameter name: :page, in: :query, type: :integer, required: true
+      parameter name: :size, in: :query, type: :integer, required: true
  
       response '200', 'report_sellers' do
         let(:id) { 1 }
@@ -97,11 +122,11 @@ RSpec.describe 'Commission Reports API', type: :request do
               } 
             },
             page:      { type: :integer },
-            page_size: { type: :integer },
+            size: { type: :integer },
             total:     { type: :integer },
             total_pages: { type: :integer }
           },
-          required: ['data', 'page', 'page_size', 'total', 'total_pages']
+          required: ['data', 'page', 'size', 'total', 'total_pages']
 
         run_test!
       end
@@ -109,13 +134,13 @@ RSpec.describe 'Commission Reports API', type: :request do
   end
 
 
-  path '/api/v1/commisions/{id}/export' do
-    get 'Generate commissions report' do
+  path '/api/v1/commissions/{id}/export' do
+    post 'Generate commissions report' do
       tags 'Commission Sellers'
       produces 'application/json'
 
       parameter name: :id, in: :path, type: :integer, required: true
-      parameter name: :type, in: :body, type: :string, required: true
+      parameter name: :doc_type, in: :query, type: :string, required: true
  
       response '200', 'report_sellers' do
         let(:id) { 1 }
@@ -123,11 +148,12 @@ RSpec.describe 'Commission Reports API', type: :request do
 
         schema type: :object,
           properties: {
-            id:     { type: :integer },
-            type:    { type: :string },
-            url:    { type: :string }
+            id:                      { type: :integer },
+            comission_report_id:     { type: :integer },
+            type:                    { type: :string },
+            url:                     { type: :string }
           },
-          required: ['url', 'type', 'id']
+          required: ['url', 'type', 'comission_report_id', 'id']
 
         run_test!
       end

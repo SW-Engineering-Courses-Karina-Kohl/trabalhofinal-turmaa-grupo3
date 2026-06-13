@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     ports:
       - "80:80"      # HTTP
-      - "8080:8080"  # Traefik Dashboard
+      - "9090:9090"  # Traefik Dashboard
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik/traefik.yml:/traefik.yml:ro
@@ -33,40 +33,23 @@ services:
       - "traefik.http.routers.admin.service=admin-service"
       - "traefik.http.services.admin-service.loadbalancer.server.port=80"
   
-  swagger-ui:
-    image: swaggerapi/swagger-ui:latest
-    container_name: swagger-ui
-    volumes:
-      - ./${SWAGGER_DOC}:/doc
-    environment:
-      - SWAGGER_JSON=/doc/swagger.json
-    depends_on:
-      - backend
-    networks:
-      - salesops-net
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.swagger.rule=Host(`swagger.localhost`)"
-      - "traefik.http.routers.swagger.entrypoints=web"
-      - "traefik.http.routers.swagger.service=swagger-service"
-      - "traefik.http.services.swagger-service.loadbalancer.server.port=8080"
+
       
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: salesops_development
+      POSTGRES_DB: salesops
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pg_data:/var/lib/postgresql/data
-    networks:
-      - salesops-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 10
-    container_name: salesops-db
+      retries: 5
+    networks:
+      - salesops-net
   
   frontend:
     build:
@@ -95,11 +78,13 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8080:8080"
     volumes:
-      - ./backend/target/classes:/usr/local/tomcat/webapps/ROOT/WEB-INF/classes
-      - ./backend/target/dependency:/usr/local/tomcat/webapps/ROOT/WEB-INF/lib
-      - ./backend/context.xml:/usr/local/tomcat/conf/context.xml
+      # Hot deploy — drop WARs here and WildFly picks them up automatically
+      - ./backend/target/sales-ops-1.0.war:/opt/jboss/wildfly/standalone/deployments/sales-ops.war  
     depends_on:
       db:
         condition: service_healthy
@@ -113,6 +98,30 @@ services:
       - "traefik.http.routers.backend.entrypoints=web"
       - "traefik.http.routers.backend.service=backend-service"
       - "traefik.http.services.backend-service.loadbalancer.server.port=8080"
+      
+  #backend:
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile.dev
+  #  environment:
+  #    - SPRING_PROFILES_ACTIVE=dev
+  #  volumes:
+  #   - ./backend/target/classes:/usr/local/tomcat/webapps/ROOT/WEB-INF/classes
+  #    - ./backend/target/dependency:/usr/local/tomcat/webapps/ROOT/WEB-INF/lib
+  #    - ./backend/context.xml:/usr/local/tomcat/conf/context.xml
+  #  depends_on:
+  #    db:
+  #      condition: service_healthy
+  #  restart: unless-stopped
+  #  networks:
+  #    - salesops-net
+  #  container_name: salesops-backend
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.backend.rule=Host(`api.localhost`)"
+  #    - "traefik.http.routers.backend.entrypoints=web"
+  #    - "traefik.http.routers.backend.service=backend-service"
+  #    - "traefik.http.services.backend-service.loadbalancer.server.port=8080"
 
 volumes:
   pg_data:

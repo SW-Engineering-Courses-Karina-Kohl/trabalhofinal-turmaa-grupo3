@@ -89,8 +89,8 @@ export default function UploadPage() {
             </p>
           </div>
           <div className="flex gap-4 text-xs text-slate-400">
-            <span>✓ CSV, XLSX up to 25MB</span>
-            <span>✓ ISO-8859-1 Compatible</span>
+            <span>✓ CSV, XLSX </span>
+            <span>✓ ISO-8859-1 </span>
           </div>
           <input
             ref={inputRef}

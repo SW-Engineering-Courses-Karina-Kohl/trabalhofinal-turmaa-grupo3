@@ -5,10 +5,14 @@ interface Props {
   totalPages: number;
   total: number;
   pageSize: number;
-  onPageChange: (page: number) => void;
+  nextPage:  () => void;
+  prevPage:  () => void;
+  canNext:  boolean; 
+  canPrev:  boolean;
+  goTo: (page: number) => void;
 }
 
-export default function Pagination({ page, totalPages, total, pageSize, onPageChange }: Props) {
+export default function Pagination({ page, totalPages, total, pageSize, nextPage, prevPage, canNext, canPrev, goTo }: Props) {
   const from = (page - 1) * pageSize + 1;
   const to   = Math.min(page * pageSize, total);
 
@@ -32,8 +36,8 @@ export default function Pagination({ page, totalPages, total, pageSize, onPageCh
       </p>
       <div className="flex items-center gap-1">
         <button
-          onClick={() => onPageChange(page - 1)}
-          disabled={page === 1}
+          onClick={prevPage}
+          disabled={canPrev}
           className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
           aria-label="Previous page"
         >
@@ -45,7 +49,7 @@ export default function Pagination({ page, totalPages, total, pageSize, onPageCh
           ) : (
             <button
               key={p}
-              onClick={() => onPageChange(p as number)}
+              onClick={() => goTo(p as number)}
               className={`w-8 h-8 rounded-lg text-sm font-medium transition ${
                 p === page
                   ? "bg-brand-700 text-white"
@@ -58,8 +62,8 @@ export default function Pagination({ page, totalPages, total, pageSize, onPageCh
           ),
         )}
         <button
-          onClick={() => onPageChange(page + 1)}
-          disabled={page === totalPages}
+          onClick={nextPage}
+          disabled={canNext}
           className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
           aria-label="Next page"
         >

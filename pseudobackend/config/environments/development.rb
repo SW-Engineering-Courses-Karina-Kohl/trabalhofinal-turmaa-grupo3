@@ -3,6 +3,11 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  config.active_job.queue_adapter = :solid_queue
+
+  # Use the same database as your main app (recommended for dev)
+  config.solid_queue.connects_to = { database: { writing: :primary } }
+
   # Make code changes take effect immediately without server restart.
   config.enable_reloading = true
 
@@ -24,6 +29,9 @@ Rails.application.configure do
   else
     config.action_controller.perform_caching = false
   end
+  
+  # Store files locally during development
+  config.active_storage.service = :local
 
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store

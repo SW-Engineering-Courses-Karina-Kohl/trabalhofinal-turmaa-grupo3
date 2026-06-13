@@ -3,7 +3,7 @@ module Api
     class CommissionReportsController < BaseController
       before_action :set_report, only: %i[show sellers]
 
-      # GET /api/v1/commissions/batches
+      # GET /api/v1/commissions/
       def index
         scope  = SellerCommissionReport.order(created_at: :desc)
         result = paginate(scope)
@@ -11,18 +11,18 @@ module Api
         render json: {
           data:        result[:data].map { |r| serialize_report(r) },
           page:        result[:page],
-          page_size:   result[:page_size],
+          size:        result[:size],
           total:       result[:total],
           total_pages: result[:total_pages]
         }
       end
 
-      # GET /api/v1/commissions/batches/:id
+      # GET /api/v1/commissions/:id
       def show
-        render json: serialize_report(@report, detailed: true)
+        render json: serialize_report(@report)
       end
 
-      # GET /api/v1/commissions/batches/:id/sellers
+      # GET /api/v1/commissions/:id/sellers
       def sellers
         scope = @report.seller_commission_report_items
 
@@ -33,22 +33,47 @@ module Api
         render json: {
           data:        result[:data].map { |i| serialize_item(i) },
           page:        result[:page],
-          page_size:   result[:page_size],
+          size:        result[:size],
           total:       result[:total],
           total_pages: result[:total_pages]
         }
       end
 
-      # GET /api/v1/commissions/batches/:id/export
+      # POST /api/v1/commissions/:id/export
       def export
         report = SellerCommissionReport.find(params[:id])
-        # TODO: generate real PDF — returning JSON manifest for now
-        render json: {
-          exported_at: Time.current,
-          report_id:   report.id,
-          filename:    report.filename,
-          message:     "PDF export not yet implemented — wire your PDF gem here."
-        }
+        doc_type = params[:doc_type]
+
+        if doc_type != 'csv' && doc_type != 'pdf'
+          render json: {
+            message:     "Type not supported"
+          }, status: :unprocessable_entity
+        else
+          hash = Digest::MD5.hexdigest(report.filename)[0..12]
+          filename = "#{report.filename}#{hash}.#{doc_type}"
+
+          export = Export.create!(
+            filename: filename,
+            seller_commission_report: report,
+            status: "created",
+            doc_type: doc_type
+          )
+
+          Thread.new do
+            ProcessExportJob.perform_now(export)
+          end
+
+          render json: serialize_export(export), status: :created
+        end
+      end
+
+      # DELETE /api/v1/commissions/:id
+      def destroy
+        report = SellerCommissionReport.find(params[:id])
+
+        report.destroy!
+
+        render json: { id: report.id }, status: :ok
       end
 
       private
@@ -57,16 +82,26 @@ module Api
         @report = SellerCommissionReport.find(params[:id])
       end
 
-      def serialize_report(report, detailed: false)
+      def serialize_export(export)
+        {
+          id:                       export.id,
+          comission_report_id:      export.seller_commission_report_id,
+          filename:                 export.filename,
+          url:                      export.url,
+          type:                     export.doc_type,
+          status:                   export.status,
+          created_at:               export.created_at
+        }
+      end
+
+      def serialize_report(report)
         base = {
           id:              report.id,
           filename:        report.filename,
-          batch_number:    "##{report.id}",
           status:          report.status,
           commission_pool: report.commission_pool,
           seller_count:    report.seller_count,
           average_payout:  report.average_payout,
-          validation_passed: report.processed?,
           created_at:      report.created_at,
           updated_at:      report.updated_at
         }

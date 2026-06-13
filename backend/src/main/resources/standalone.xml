@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server xmlns="urn:jboss:domain:20.0">
+    <extensions>
+        <extension module="org.jboss.as.clustering.infinispan"/>
+        <extension module="org.jboss.as.connector"/>
+        <extension module="org.jboss.as.deployment-scanner"/>
+        <extension module="org.jboss.as.ejb3"/>
+        <extension module="org.jboss.as.jaxrs"/>
+        <extension module="org.jboss.as.jpa"/>
+        <extension module="org.jboss.as.logging"/>
+        <extension module="org.jboss.as.naming"/>
+        <extension module="org.jboss.as.security"/>
+        <extension module="org.jboss.as.transactions"/>
+        <extension module="org.jboss.as.web"/>
+        <extension module="org.wildfly.extension.undertow"/>
+    </extensions>
+
+    <subsystems>
+        <!-- Datasources subsystem -->
+        <subsystem xmlns="urn:jboss:domain:datasources:6.0">
+            <datasources>
+                <datasource jndi-name="java:/SalesOpsDS"
+                            pool-name="SalesOpsDS"
+                            enabled="true"
+                            use-java-context="true">
+                    <connection-url>jdbc:postgresql://db:5432/salesops</connection-url>
+                    <driver>postgresql</driver>
+                    <security>
+                        <user-name>${env.DB_USER}</user-name>
+                        <password>${env.DB_PASSWORD}</password>
+                    </security>
+                    <validation>
+                        <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"/>
+                        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/>
+                    </validation>
+                </datasource>
+
+                <drivers>
+                    <driver name="postgresql" module="org.postgresql">
+                        <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
+                    </driver>
+                </drivers>
+            </datasources>
+        </subsystem>
+
+        <!-- Transactions -->
+        <subsystem xmlns="urn:jboss:domain:transactions:6.0">
+            <core-environment node-identifier="1">
+                <process-id>
+                    <uuid/>
+                </process-id>
+            </core-environment>
+            <recovery-environment socket-binding="txn-recovery-environment"
+                                  status-socket-binding="txn-status-manager"/>
+        </subsystem>
+    </subsystems>
+</server>

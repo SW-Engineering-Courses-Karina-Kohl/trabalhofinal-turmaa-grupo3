@@ -8,7 +8,42 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-  
+      
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-ui
+    volumes:
+      - ./${SWAGGER_DOC}:/doc
+    environment:
+      - SWAGGER_JSON=/doc/swagger.json
+    depends_on:
+      - backend
+    networks:
+      - salesops-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.swagger.rule=Host(`swagger.localhost`)"
+      - "traefik.http.routers.swagger.entrypoints=web"
+      - "traefik.http.routers.swagger.service=swagger-service"
+      - "traefik.http.services.swagger-service.loadbalancer.server.port=8080"
+      
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: salesops_development
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - salesops-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    container_name: salesops-db
+    
   backend:
     build:
       context: ./pseudobackend

@@ -1,0 +1,5 @@
+/subsystem=datasources/jdbc-driver=postgresql:add(driver-name=postgresql,driver-module-name=org.postgresql,driver-xa-datasource-class-name=org.postgresql.xa.PGXADataSource)
+
+reload --admin-only
+
+data-source add --name=SalesOpsDS --jndi-name=java:/SalesOpsDS --driver-name=postgresql --connection-url=jdbc:postgresql://db:5432/salesops --user-name=${env.DB_USER} --password=${env.DB_PASSWORD} --use-java-context=true --jta=true
