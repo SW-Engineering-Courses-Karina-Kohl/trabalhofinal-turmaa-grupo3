@@ -1,0 +1,11 @@
+venda_id,vendedor_id,nome,valor
+V01,01,Joao,5000.0
+V02,01,Joao,6000.0
+V03,02,Maria,12000.0
+V04,03,Carlos,7500.5
+V05,02,Maria,3000.0
+V06,03,Carlos,4200.75
+V07,01,Joao,1500.0
+V08,04,Ana,9800.0
+V09,04,Ana,2200.0
+V10,02,Maria,4100.25

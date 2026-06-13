@@ -13,42 +13,26 @@ import java.util.List;
 import java.util.Map;
 
 public class SalesCsvParser {
-  // @what: read sales from CSV
-  // @param: String filePath -> file location (with file name)
-  // @return: List<sellerBuilders> sellerBuilders -> each contains their own List<Sale>
-  public List<SellerBuilder> getSellerList(Reader reader) throws IOException {
-    // hashmap to keep track of instantiated sellerBuilders
-    Map<Integer, SellerBuilder> sellerIdMap = new HashMap<>();
-    List<SellerBuilder> sellerBuilders = new ArrayList<>();
+  public List<Seller> getSellerList(String filePath) throws IOException {
+    try (FileReader fr = new FileReader(filePath)) {
+      return getSellerListFromReader(fr);
+    }
+  }
 
-    //try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+  public List<Seller> getSellerListFromReader(Reader reader) throws IOException {
+    Map<Integer, Seller> sellerIdMap = new HashMap<>();
+    List<Seller> sellers = new ArrayList<>();
     try (BufferedReader br = new BufferedReader(reader)) {
       String line;
-      // ignore CSV header
-      br.readLine();
+      br.readLine(); // skip header
       while ((line = br.readLine()) != null) {
         String[] data = line.split(",");
-
-        // data[0]: saleID
-        // data[1]: sellerID
-        // data[2]: seller name
-        // data[3]: salePrice
-
-        String saleId = data[0];
-        int sellerId = Integer.parseInt(data[1]);
-        String sellerName = data[2];
-        double salePrice = Double.parseDouble(data[3]);
-
         try {
-          // checks if seller with that sellerId has already been instantiated
-          SellerBuilder sellerBuilder = sellerIdMap.get(sellerId);
-          if (sellerBuilder == null) {
-            sellerBuilder = new SellerBuilder();
-            sellerBuilder.sellerId(sellerId);
-            sellerBuilder.name(sellerName);
-
-            sellerIdMap.put(sellerId, sellerBuilder);
-            sellerBuilders.add(sellerBuilder);
+          Seller seller = sellerIdMap.get(Integer.parseInt(data[1]));
+          if (seller == null) {
+            seller = new Seller(data[2], Integer.parseInt(data[1]));
+            sellerIdMap.put(Integer.parseInt(data[1]), seller);
+            sellers.add(seller);
           }
 
           Sale sale = new Sale(sellerId, saleId, salePrice);
@@ -56,11 +40,10 @@ public class SalesCsvParser {
 
         } catch (IllegalArgumentException e) {
           System.out.println("error parsing sale in CSV: " + e.getMessage());
-          throw new IllegalArgumentException("error parsing parsing sale in CSV.");
+          throw new IllegalArgumentException("error parsing sale in CSV.");
         }
       }
     }
-
-    return sellerBuilders;
+    return sellers;
   }
 }
