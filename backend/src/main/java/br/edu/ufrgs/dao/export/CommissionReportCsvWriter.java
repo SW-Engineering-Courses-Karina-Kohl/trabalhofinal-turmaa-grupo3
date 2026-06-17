@@ -30,7 +30,7 @@ public class CommissionReportCsvWriter implements ExportFileContract {
       }
 
       private void writeToFile(List<Seller> sellers, File file) throws IOException {
-          sellers.sort(Comparator.comparingInt(Seller::getId));
+          sellers.sort(Comparator.comparingInt(Seller::getSellerId));
 
           // write-to-file logic
           try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {

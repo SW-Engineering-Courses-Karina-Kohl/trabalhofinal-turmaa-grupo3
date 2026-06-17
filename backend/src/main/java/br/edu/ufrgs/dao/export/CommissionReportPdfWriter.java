@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -36,6 +37,8 @@ public class CommissionReportPdfWriter implements ExportFileContract {
     @Override
     public void write(List<Seller> sellers, Path path) throws IOException {
         if (Files.exists(path)) Files.delete(path);
+
+        sellers.sort(Comparator.comparingInt(Seller::getSellerId));
 
         try (PdfWriter pdfWriter = new PdfWriter(path.toFile());
              PdfDocument pdf = new PdfDocument(pdfWriter);
