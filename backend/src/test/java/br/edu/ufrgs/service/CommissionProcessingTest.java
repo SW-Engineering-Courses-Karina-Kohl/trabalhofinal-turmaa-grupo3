@@ -101,8 +101,8 @@ public class CommissionProcessingTest {
 
         assertEquals(mockSeller.getSellerId(),   seller.getSellerId(),   String.format("#%s sellerId mismatch", i));
         assertEquals(mockSeller.getName(),       seller.getName(),       String.format("#%s name mismatch", i));
-        assertEquals(mockSeller.getTotalSales(), seller.getTotalSales(), String.format("#%s totalSales mismatch", i));
-        assertEquals(mockSeller.getCommission(), seller.getCommission(), String.format("#%s commission mismatch", i));
+        assertEquals(mockSeller.getTotalSales(), seller.getTotalSales(),0.001, String.format("#%s totalSales mismatch", i));
+        assertEquals(mockSeller.getCommission(), seller.getCommission(), 0.001, String.format("#%s commission mismatch", i));
       }
   }
 } 

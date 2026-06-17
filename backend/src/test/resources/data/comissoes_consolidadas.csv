@@ -1,3 +1,3 @@
-seller_id,name,total_sales,commission
-1,Ismael,11000,00,880,00
-2,Maria,12000,00,960,00
+vendedor_id,nome,total_vendas,comissao
+1,Ismael,11000.00,880.00
+2,Maria,12000.00,960.00

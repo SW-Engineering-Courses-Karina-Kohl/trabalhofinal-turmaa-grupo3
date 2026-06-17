@@ -48,6 +48,10 @@ public class SellerBuilder {
     public Seller build(CommissionReport commissionReport) {
         if (name == null || commissionReport == null)
             throw new IllegalStateException("name and commissionReport are required");
-        return new Seller(sellerId, name, initials, totalSales, commissionRate, commission, commissionReport);
+        Seller seller = new Seller(sellerId, name, initials, totalSales, commissionRate, commission, commissionReport);
+        for(Sale sale : this.sales) {
+            seller.addSale(sale);
+        }
+        return seller;
     }
 }

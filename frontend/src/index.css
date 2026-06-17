@@ -1,20 +1,16 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.js";
 
 @layer base {
   :root {
     --sidebar-w: 13rem;
   }
-
   html {
     @apply antialiased;
   }
-
   body {
     @apply bg-slate-50 text-slate-800 font-sans;
   }
-
   /* Scrollbar */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { @apply bg-transparent; }
@@ -38,26 +34,23 @@
   .status-badge--rejected {
     @apply text-red-700 bg-red-50;
   }
-
   .card {
     @apply bg-white rounded-2xl border border-slate-100 shadow-sm;
   }
-
   .btn-primary {
     @apply inline-flex items-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5
            text-sm font-semibold text-white shadow-sm
            hover:bg-brand-800 active:scale-95 transition-all;
   }
-
   .btn-secondary {
     @apply inline-flex items-center gap-2 rounded-xl border border-slate-200
            bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm
            hover:bg-slate-50 active:scale-95 transition-all;
   }
-
   .input-search {
     @apply w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5
            text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2
            focus:ring-brand-500 focus:border-transparent transition;
   }
 }
+

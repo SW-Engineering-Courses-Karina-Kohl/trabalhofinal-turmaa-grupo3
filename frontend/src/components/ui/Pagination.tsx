@@ -32,7 +32,7 @@ export default function Pagination({ page, totalPages, total, pageSize, nextPage
   return (
     <div className="flex items-center justify-between pt-4 border-t border-slate-100">
       <p className="text-sm text-slate-400">
-        Showing {from}–{to} of {total} results
+         Mostrando{from}–{to} de {total} resultados
       </p>
       <div className="flex items-center gap-1">
         <button

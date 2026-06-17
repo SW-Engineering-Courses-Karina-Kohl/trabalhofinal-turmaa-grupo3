@@ -16,8 +16,6 @@ export default function Sidebar() {
         </div>
         <span className="font-bold text-slate-800 leading-tight text-sm">
           SalesOps
-          <br />
-          <span className="font-normal text-slate-400">SalesOps</span>
         </span>
       </div>
 

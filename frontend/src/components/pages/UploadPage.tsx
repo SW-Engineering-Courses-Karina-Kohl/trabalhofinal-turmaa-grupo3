@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { FileText, Upload, SlidersHorizontal } from "lucide-react";
+import { Upload, SlidersHorizontal } from "lucide-react";
 import { useUploadApi } from "@/api/uploads";
 
 export default function UploadPage() {
@@ -11,7 +11,7 @@ export default function UploadPage() {
 
   function handleFileSelect(file: File) {
     UploadAPIController.uploadSalesReport(file);
-    console.info("File selected:", file.name);
+    console.info("Arquivo selecionado:", file.name);
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -24,10 +24,10 @@ export default function UploadPage() {
   return (
     <div className="max-w-4xl space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Upload &amp; Manage</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Enviar Relatório de Vendas</h1>
         <p className="mt-1 text-slate-500">
-          Import your sales data for automated commission processing. Ensure your
-          CSV follows the standardized schema for accurate quarterly modeling.
+          Envie seus dados de vendas para processar as comissões automaticamente.
+          Verifique se o CSV segue o padrão descrito no Esquema Padrão.
         </p>
       </div>
 
@@ -50,10 +50,10 @@ export default function UploadPage() {
             <Upload size={24} className="text-brand-600" />
           </div>
           <div className="text-center">
-            <p className="font-semibold text-slate-800">Upload CSV</p>
+            <p className="font-semibold text-slate-800">Enviar CSV</p>
             <p className="text-sm text-slate-500 mt-1">
-              Drag and drop your transaction file here, or{" "}
-              <span className="text-brand-600 underline underline-offset-2">browse files</span>
+              Puxe e coloque o arquivo aqui, ou clique para{" "}
+              <span className="text-brand-600 underline underline-offset-2">selecionar o arquivo</span>
             </p>
           </div>
           <div className="flex gap-4 text-xs text-slate-400">
@@ -72,20 +72,11 @@ export default function UploadPage() {
         {/* Schema card */}
         <div className="card p-5 w-56 shrink-0 space-y-3">
           <p className="text-[11px] font-bold tracking-widest text-slate-400 uppercase">
-            Standardized Schema
+            Esquema Padrão 
           </p>
           <div className="flex items-start gap-2 text-sm text-slate-600">
             <SlidersHorizontal size={14} className="text-slate-400 mt-0.5 shrink-0" />
-            <span>Deal_ID, Amount, Date, Rep_Code, Status</span>
-          </div>
-          <div className="flex items-start gap-2 text-sm text-slate-600">
-            <FileText size={14} className="text-slate-400 mt-0.5 shrink-0" />
-            <span>
-              Download the{" "}
-              <a href="#" className="text-brand-600 font-medium hover:underline">
-                Latest Template
-              </a>{" "}
-            </span>
+            <span>venda_id, vendedor_id, nome, valor_venda</span>
           </div>
         </div>
       </div>

@@ -15,8 +15,7 @@ export default function CommissionReportsPage() {
   return (
     <div className="max-w-4xl space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Results Archive</h1>
-        <p className="mt-1 text-slate-500">All finalized commission batches.</p>
+        <h1 className="text-3xl font-bold text-slate-900">Relatórios de Comissões</h1>
       </div>
 
       <div className="space-y-3">
@@ -33,13 +32,13 @@ export default function CommissionReportsPage() {
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-slate-800 truncate">{commissionReport.filename}</p>
               <p className="text-sm text-slate-400 mt-0.5">
-                {commissionReport.seller_count} sellers
+                {commissionReport.seller_count} vendedores 
               </p>
             </div>
 
             <div className="text-right shrink-0">
               <p className="text-lg font-bold text-brand-700">{Currency(commissionReport.commission_pool)}</p>
-              <p className="text-xs text-slate-400 mt-0.5">Commission Pool</p>
+              <p className="text-xs text-slate-400 mt-0.5">Total de Comissões</p>
             </div>
 
             <ChevronRight

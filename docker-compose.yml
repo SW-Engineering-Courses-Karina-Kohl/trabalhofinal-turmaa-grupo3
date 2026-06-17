@@ -2,19 +2,18 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
       POSTGRES_DB: salesops
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pg_data:/var/lib/postgresql/data
-    networks:
-      - salesops-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 10
-    container_name: salesops-db
+      retries: 5
+    networks:
+      - salesops-net
   
   frontend:
     build:
@@ -23,9 +22,11 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    ports:
+      - "80:5173"
     environment:
-      - VITE_API_BASE_URL=${API_ENDPOINT}
-      - VITE_WS_URL=${WS_ENDPOINT}
+      - VITE_API_URL=${VITE_API_URL}
+      - VITE_WS_URL=${VITE_WS_URL}
     depends_on:
       - backend
     networks:
@@ -35,15 +36,14 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile.dev
     environment:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      # Hot deploy — drop WARs here and WildFly picks them up automatically
-      - ./target/sales-ops-1.0.war:/opt/jboss/wildfly/standalone/deployments/sales-ops.war
     ports:
-      - "8080:8080"    
+      - "8080:8080"
+    volumes:
+      - ./backend/target/sales-ops-1.0.war:/opt/jboss/wildfly/standalone/deployments/sales-ops.war  
     depends_on:
       db:
         condition: service_healthy

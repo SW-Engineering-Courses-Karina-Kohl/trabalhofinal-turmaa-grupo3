@@ -17,7 +17,8 @@ import { useEffect } from "react";
 import { Currency } from "../ui/UIHelpers";
 
 function fmtPct(n: number) {
-  return `${n.toFixed(1)}%`;
+  let k : number = n * 100;
+  return `${k.toFixed(1)}%`;
 }
 
 // ── Stat card ─────────────────────────────────────────────────────────────────
@@ -79,7 +80,7 @@ export default function SellersPage() {
             onClick={() => navigate("/commissions")}
             className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors"
           >
-            <ArrowLeft size={14} /> Back to Archive
+            <ArrowLeft size={14} /> Voltar aos relatórios 
           </button>
 
           <div className="flex items-start justify-between">
@@ -88,7 +89,7 @@ export default function SellersPage() {
             </div>
             <div className="text-right shrink-0">
               <p className="text-xs text-slate-400 uppercase tracking-widest font-medium">
-                Total Commission Pool
+                Total de comissões
               </p>
               <p className="text-4xl font-bold text-brand-700 tabular-nums">
                 {Currency(commission?.commission_pool ?? 0)}
@@ -100,12 +101,12 @@ export default function SellersPage() {
           <div className="grid grid-cols-3 gap-4">
             <StatCard
               icon={<Users size={18} />}
-              label="Active Sellers"
+              label="Vendedores"
               value={String(commission?.seller_count ?? 0)}
             />
             <StatCard
               icon={<DollarSign size={18} />}
-              label="Average Payout"
+              label="Média de comissão"
               value={Currency(commission?.average_payout ?? 0)}
             />
           </div>
@@ -116,11 +117,9 @@ export default function SellersPage() {
               <ShieldCheck size={16} />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-800">Financial Integrity Protocol</p>
+              <p className="text-sm font-semibold text-slate-800">Protocolo de Integridade Financeira</p>
               <p className="text-sm text-slate-500 mt-0.5">
-                This report is locked for editing. Any changes to commission logic must be applied via a
-                new calculation version to maintain the audit trail. Exporting this data will generate a
-                timestamped manifest.
+                Este relatório está bloqueado para edição. Quaisquer alterações na lógica de comissão devem ser aplicadas por meio de uma nova versão de cálculo para manter o histórico de auditoria. A exportação destes dados gerará um manifesto com registro de data e hora.
               </p>
             </div>
           </div>
@@ -130,10 +129,10 @@ export default function SellersPage() {
             <div className="flex items-center gap-3 mb-5">
               <div className="flex gap-2 ml-auto">
                 <button className="btn-secondary text-sm" onClick={() => CommissionReportAPIClient.exportTo(commissionReportId, "pdf")}>
-                  <Download size={14} /> Export PDF
+                  <Download size={14} /> Exportar PDF
                 </button>
                 <button className="btn-secondary text-sm" onClick={() => CommissionReportAPIClient.exportTo(commissionReportId, "csv")}>
-                  <Download size={14} /> Export CSV 
+                  <Download size={14} /> Exporta CSV 
                 </button>
               </div>
             </div>
@@ -142,10 +141,10 @@ export default function SellersPage() {
               <thead>
                 <tr className="border-b border-slate-100">
                   {[
-                    "Seller Name",
-                    "Total Sales ($)",
-                    "Commission Rate (%)",
-                    "Final Commission ($)",
+                    "Nome",
+                    "Total de Vendas (R$)",
+                    "Comissão (%)",
+                    "Total Comissão (R$)",
                   ].map((h) => (
                     <th
                       key={h}

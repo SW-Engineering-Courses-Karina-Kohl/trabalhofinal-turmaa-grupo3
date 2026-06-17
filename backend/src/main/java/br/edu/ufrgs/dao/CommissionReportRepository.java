@@ -33,10 +33,6 @@ public class CommissionReportRepository {
 
         int totalPages = (int) Math.ceil((double) count / size);
 
-        System.out.print("Reports: " + reports.size());
-        System.out.println("Count: " + count);
-        System.out.println("Page: " + page + " Size: " + size + " FirstResult: " + (page * size));
-
         return PagedResponse.<CommissionReport>builder()
         	.data(reports)
         	.page(page)

@@ -6,6 +6,7 @@ import br.edu.ufrgs.model.Seller;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 
 public class CommissionReportCsvWriter implements ExportFileContract {
@@ -29,9 +30,11 @@ public class CommissionReportCsvWriter implements ExportFileContract {
       }
 
       private void writeToFile(List<Seller> sellers, File file) throws IOException {
+          sellers.sort(Comparator.comparingInt(Seller::getId));
+
           // write-to-file logic
           try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-              writer.write("seller_id,name,total_sales,commission");
+              writer.write("vendedor_id,nome,total_vendas,comissao");
               writer.newLine();
 
               for(Seller seller : sellers) {
