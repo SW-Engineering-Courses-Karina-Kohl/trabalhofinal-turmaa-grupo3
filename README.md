@@ -1,3 +1,30 @@
+## COMO RODAR O PROJETO
+
+Com o terminal do VisualStudio aberto,
+executar, por favor, os comandos nesta ordem:
+
+git clone git@github.com:SW-Engineering-Courses-Karina-Kohl/trabalhofinal-turmaa-grupo3.git
+
+git fetch
+
+git checkout ultima-branch
+
+docker compose -f docker-compose.dev.yml build
+docker compose -f docker-compose.dev.yml up -d
+
+executar este comando dentro da pasta backend do trabalho (cd backend):
+
+./mvnw compile dependency:copy-dependencies -DoutputDirectory=target/dependency
+
+Acessar o programa em http://frontend.localhost/upload
+
+Se não funcionar, executar estes comandos no diretório backend mencionado anteriormente:
+
+mvn compile dependency:copy-dependencies -DoutputDirectory=target/dependency
+
+docker-compose -f docker-compose.dev.yml restart backend
+
+
 ## 🎨 Style Guide Implementation
 
 This project follows a subset of **Google's Java Style Guide**. Please adhere to the following formatting standards:
